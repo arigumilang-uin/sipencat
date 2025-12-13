@@ -10,20 +10,56 @@
     </div>
 
     <div class="d-flex align-items-center gap-3">
-        <!-- Notifications (Future feature) -->
+        <!-- Notifications -->
         <div class="dropdown">
+            @php
+                $unreadCount = Auth::user()->notifications()->unread()->count();
+                $recentNotifs = Auth::user()->notifications()->latest()->limit(5)->get();
+            @endphp
             <button class="btn btn-link position-relative" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-bell fs-5 text-dark"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                    0
-                </span>
+                @if($unreadCount > 0)
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                    </span>
+                @endif
             </button>
-            <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
-                <li class="dropdown-header">Notifikasi</li>
-                <li><hr class="dropdown-divider"></li>
-                <li class="px-3 py-2 text-muted text-center">
-                    <small>Tidak ada notifikasi baru</small>
+            <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                    <span>Notifikasi</span>
+                    @if($unreadCount > 0)
+                        <form action="{{ route('notifications.read-all') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-link btn-sm text-decoration-none p-0">Tandai Semua</button>
+                        </form>
+                    @endif
                 </li>
+                <li><hr class="dropdown-divider"></li>
+                @forelse($recentNotifs as $notif)
+                    <li>
+                        <a class="dropdown-item {{ !$notif->is_read ? 'bg-light' : '' }}" href="{{ route('notifications.index') }}">
+                            <div class="d-flex">
+                                <i class="{{ $notif->icon }} text-{{ $notif->color }} me-2 fs-5"></i>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block">{{ $notif->title }}</strong>
+                                    <small class="text-muted">{{ $notif->message }}</small>
+                                    <small class="d-block text-muted">{{ $notif->created_at->diffForHumans() }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    @if(!$loop->last)
+                        <li><hr class="dropdown-divider"></li>
+                    @endif
+                @empty
+                    <li class="px-3 py-2 text-muted text-center">
+                        <small>Tidak ada notifikasi baru</small>
+                    </li>
+                @endforelse
+                @if($recentNotifs->count() > 0)
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-center small" href="{{ route('notifications.index') }}">Lihat Semua Notifikasi</a></li>
+                @endif
             </ul>
         </div>
 
@@ -46,12 +82,12 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" href="{{ route('profile.show') }}">
                         <i class="bi bi-person me-2"></i> Profile
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" href="{{ route('profile.settings') }}">
                         <i class="bi bi-gear me-2"></i> Pengaturan
                     </a>
                 </li>

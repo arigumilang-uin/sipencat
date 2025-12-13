@@ -43,6 +43,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'role' => UserRole::class,
         'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
     ];
 
     /**
@@ -67,6 +68,14 @@ class User extends Authenticatable
     public function auditLogs()
     {
         return $this->hasMany(AuditLog::class);
+    }
+
+    /**
+     * Relasi ke Notifications
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 
     /**

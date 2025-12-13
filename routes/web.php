@@ -93,13 +93,41 @@ Route::middleware('auth')->group(function () {
         ]);
     });
 
+
     // =============================================
     // REPORT ROUTES (All authenticated users)
     // =============================================
     Route::prefix('reports')->name('reports.')->middleware('can:canViewReports')->group(function () {
-        // Reports will be added later
-        Route::get('/', function () {
-            return view('reports.index');
-        })->name('index');
+        Route::get('/', [\App\Http\Controllers\Report\ReportController::class, 'index'])->name('index');
+        Route::get('/stock', [\App\Http\Controllers\Report\ReportController::class, 'stock'])->name('stock');
+        Route::get('/barang-masuk', [\App\Http\Controllers\Report\ReportController::class, 'barangMasuk'])->name('barang-masuk');
+        Route::get('/barang-keluar', [\App\Http\Controllers\Report\ReportController::class, 'barangKeluar'])->name('barang-keluar');
+        Route::get('/supplier', [\App\Http\Controllers\Report\ReportController::class, 'supplier'])->name('supplier');
+        Route::get('/mutation', [\App\Http\Controllers\Report\ReportController::class, 'mutation'])->name('mutation');
+    });
+
+    // =============================================
+    // PROFILE ROUTES (All authenticated users)
+    // =============================================
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Profile\ProfileController::class, 'show'])->name('show');
+        Route::get('/edit', [\App\Http\Controllers\Profile\ProfileController::class, 'edit'])->name('edit');
+        Route::put('/update', [\App\Http\Controllers\Profile\ProfileController::class, 'update'])->name('update');
+        
+        Route::get('/password', [\App\Http\Controllers\Profile\ProfileController::class, 'editPassword'])->name('password.edit');
+        Route::put('/password', [\App\Http\Controllers\Profile\ProfileController::class, 'updatePassword'])->name('password.update');
+        
+        Route::get('/settings', [\App\Http\Controllers\Profile\ProfileController::class, 'settings'])->name('settings');
+        Route::post('/deactivate', [\App\Http\Controllers\Profile\ProfileController::class, 'deactivate'])->name('deactivate');
+    });
+
+    // =============================================
+    // NOTIFICATION ROUTES (All authenticated users)
+    // =============================================
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread', [\App\Http\Controllers\NotificationController::class, 'getUnread'])->name('unread');
+        Route::post('/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('read-all');
     });
 });

@@ -66,10 +66,36 @@
                 <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem;">Laporan</small>
             </div>
 
-            <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports*') ? 'active' : '' }}">
-                <i class="bi bi-graph-up"></i>
-                <span>Laporan</span>
+            <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                <i class="bi bi-house-door"></i>
+                <span>Dashboard Laporan</span>
             </a>
+
+            @can('canManageInventory')
+                {{-- Admin & Gudang: Operational Reports --}}
+                <a href="{{ route('reports.stock') }}" class="{{ request()->routeIs('reports.stock') ? 'active' : '' }}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Laporan Stok</span>
+                </a>
+                
+                <a href="{{ route('reports.mutation') }}" class="{{ request()->routeIs('reports.mutation') ? 'active' : '' }}">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <span>Mutasi Stok</span>
+                </a>
+            @endcan
+
+            @can('isPemilik')
+                {{-- Pemilik: Business Reports Only --}}
+                <a href="{{ route('reports.stock') }}" class="{{ request()->routeIs('reports.stock') ? 'active' : '' }}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Laporan Stok</span>
+                </a>
+                
+                <a href="{{ route('reports.supplier') }}" class="{{ request()->routeIs('reports.supplier') ? 'active' : '' }}">
+                    <i class="bi bi-shop"></i>
+                    <span>Laporan Supplier</span>
+                </a>
+            @endcan
         @endcan
 
         <!-- User Info at Bottom -->

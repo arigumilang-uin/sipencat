@@ -31,7 +31,7 @@
                                     <th width="15%">Username</th>
                                     <th width="15%">Role</th>
                                     <th width="10%">Status</th>
-                                    <th width="15%">Terdaftar</th>
+                                    <th width="15%">Last Login</th>
                                     <th width="20%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -70,7 +70,22 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <small>{{ $user->created_at->format('d/m/Y H:i') }}</small>
+                                            @if($user->last_login_at)
+                                                <div class="d-flex align-items-center">
+                                                    @php
+                                                        $isOnline = $user->last_login_at->gt(now()->subMinutes(5));
+                                                    @endphp
+                                                    <span class="badge bg-{{ $isOnline ? 'success' : 'secondary' }} me-2">
+                                                        <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+                                                    </span>
+                                                    <div>
+                                                        <small class="d-block">{{ $user->last_login_at->diffForHumans() }}</small>
+                                                        <small class="text-muted">{{ $user->last_login_at->format('d/m/Y H:i') }}</small>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <small class="text-muted">Belum login</small>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">

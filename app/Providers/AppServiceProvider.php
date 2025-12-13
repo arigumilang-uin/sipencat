@@ -32,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
         BarangMasuk::observe(AuditLogObserver::class);
         BarangKeluar::observe(AuditLogObserver::class);
 
+        // Register Barang Observer for Notifications
+        Barang::observe(\App\Observers\BarangObserver::class);
+
         // Define Authorization Gates (5A)
         Gate::define('isAdmin', function (User $user) {
             return $user->role === UserRole::ADMIN;

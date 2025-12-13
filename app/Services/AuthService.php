@@ -64,6 +64,12 @@ class AuthService
         // Regenerate session to prevent session fixation
         request()->session()->regenerate();
 
+        // Track last login (Security monitoring)
+        $user->update([
+            'last_login_at' => now(),
+            'last_login_ip' => request()->ip(),
+        ]);
+
         return $user;
     }
 
