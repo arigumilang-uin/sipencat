@@ -48,12 +48,27 @@ class AuthService
             ]);
         }
 
+
         // Check if user is active
         if (!$user->is_active) {
             throw ValidationException::withMessages([
                 'username' => ['Akun Anda tidak aktif. Hubungi administrator.'],
             ]);
         }
+
+        // Check working hours for role-based access (Time-based Access Control)
+        if (!\App\Models\WorkingHour::canAccessNow($user->role->value)) {
+            $nextAccessTime = \App\Models\WorkingHour::getNextAccessTime($user->role->value);
+            $dayName = now()->locale('id')->dayName;
+            
+            throw ValidationException::withMessages([
+                'username' => [
+                    "Akses ditolak. Anda hanya dapat login pada jam kerja yang ditentukan." . 
+                    ($nextAccessTime ? " Jam kerja hari {$dayName} dimulai pukul {$nextAccessTime}." : "")
+                ],
+            ]);
+        }
+
 
         // Clear rate limiter on successful login
         RateLimiter::clear($this->throttleKey($username));
@@ -68,6 +83,15 @@ class AuthService
         $user->update([
             'last_login_at' => now(),
             'last_login_ip' => request()->ip(),
+        ]);
+
+        // Log login history untuk audit trail
+        \App\Models\LoginHistory::create([
+            'user_id' => $user->id,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'success' => true,
+            'login_at' => now(),
         ]);
 
         return $user;

@@ -40,8 +40,13 @@ class AppServiceProvider extends ServiceProvider
             return $user->role === UserRole::ADMIN;
         });
 
+        Gate::define('isStaffOperasional', function (User $user) {
+            return $user->role === UserRole::STAFF_OPERASIONAL;
+        });
+
+        // Backward compatibility alias
         Gate::define('isGudang', function (User $user) {
-            return $user->role === UserRole::GUDANG;
+            return $user->role === UserRole::STAFF_OPERASIONAL;
         });
 
         Gate::define('isPemilik', function (User $user) {
@@ -49,12 +54,17 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Combined Gates for flexibility
+        Gate::define('isAdminOrStaffOperasional', function (User $user) {
+            return in_array($user->role, [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL]);
+        });
+
+        // Backward compatibility
         Gate::define('isAdminOrGudang', function (User $user) {
-            return in_array($user->role, [UserRole::ADMIN, UserRole::GUDANG]);
+            return in_array($user->role, [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL]);
         });
 
         Gate::define('canManageInventory', function (User $user) {
-            return in_array($user->role, [UserRole::ADMIN, UserRole::GUDANG]);
+            return in_array($user->role, [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL]);
         });
 
         Gate::define('canViewReports', function (User $user) {

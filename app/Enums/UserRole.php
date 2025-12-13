@@ -5,7 +5,7 @@ namespace App\Enums;
 enum UserRole: string
 {
     case ADMIN = 'admin';
-    case GUDANG = 'gudang';
+    case STAFF_OPERASIONAL = 'staff_operasional';
     case PEMILIK = 'pemilik';
 
     /**
@@ -23,7 +23,7 @@ enum UserRole: string
     {
         return match($this) {
             self::ADMIN => 'Administrator',
-            self::GUDANG => 'Staff Gudang',
+            self::STAFF_OPERASIONAL => 'Staff Operasional',
             self::PEMILIK => 'Pemilik',
         };
     }
@@ -37,11 +37,19 @@ enum UserRole: string
     }
 
     /**
-     * Check if role is gudang
+     * Check if role is staff operasional
+     */
+    public function isStaffOperasional(): bool
+    {
+        return $this === self::STAFF_OPERASIONAL;
+    }
+
+    /**
+     * Backward compatibility: alias for isStaffOperasional
      */
     public function isGudang(): bool
     {
-        return $this === self::GUDANG;
+        return $this->isStaffOperasional();
     }
 
     /**

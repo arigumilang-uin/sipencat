@@ -50,6 +50,28 @@
     </div>
 </div>
 
+<!-- Working Hours Widget -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        @include('components.working-hours-widget')
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Informasi Cepat
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Selamat datang, {{ auth()->user()->name }}!</strong></p>
+                <p class="mb-0 text-muted">Anda sedang mengelola sistem inventory. Pastikan semua transaksi tercatat dengan benar.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <!-- Recent Barang Masuk -->
     <div class="col-md-6">

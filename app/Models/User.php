@@ -79,6 +79,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Shift (many-to-many via shift_members)
+     */
+    public function shift()
+    {
+        return $this->belongsToMany(Shift::class, 'shift_members')->withTimestamps();
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin(): bool
@@ -87,11 +95,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is gudang
+     * Check if user is staff operasional
+     */
+    public function isStaffOperasional(): bool
+    {
+        return $this->role === UserRole::STAFF_OPERASIONAL;
+    }
+
+    /**
+     * Backward compatibility: Check if user is gudang (alias to isStaffOperasional)
      */
     public function isGudang(): bool
     {
-        return $this->role === UserRole::GUDANG;
+        return $this->isStaffOperasional();
     }
 
     /**

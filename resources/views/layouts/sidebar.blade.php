@@ -27,10 +27,36 @@
                 <i class="bi bi-file-text-fill"></i>
                 <span>Audit Logs</span>
             </a>
+
+            <a href="{{ route('admin.working-hours.index') }}" class="{{ request()->routeIs('admin.working-hours*') ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Jam Kerja</span>
+            </a>
+
+            <a href="{{ route('admin.shifts.index') }}" class="{{ request()->routeIs('admin.shifts*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i>
+                <span>Kelola Shift</span>
+            </a>
+
+            <a href="{{ route('admin.overtime.index') }}" class="{{ request()->routeIs('admin.overtime*') ? 'active' : '' }}">
+                <i class="bi bi-hourglass-split"></i>
+                <span>Perpanjangan Waktu</span>
+                @php
+                    $pendingCount = \App\Models\OvertimeRequest::where('status', 'pending')->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="badge bg-warning text-dark ms-auto">{{ $pendingCount }}</span>
+                @endif
+            </a>
         @endcan
 
-        <!-- INVENTORY MENU (Admin & Gudang) -->
+        <!-- MY SHIFT MENU (Staff Operasional) -->
         @can('canManageInventory')
+            <a href="{{ route('shift.info') }}" class="{{ request()->routeIs('shift.info') ? 'active' : '' }}">
+                <i class="bi bi-person-badge"></i>
+                <span>Shift Saya</span>
+            </a>
+
             <div class="mt-3 px-3">
                 <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem;">Master Data</small>
             </div>

@@ -70,6 +70,26 @@ Route::middleware('auth')->group(function () {
         // Audit Logs
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
         Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+
+        // Working Hours Management
+        Route::get('working-hours', [\App\Http\Controllers\Admin\WorkingHourController::class, 'index'])->name('working-hours.index');
+        Route::post('working-hours', [\App\Http\Controllers\Admin\WorkingHourController::class, 'store'])->name('working-hours.store');
+        Route::delete('working-hours/{workingHour}', [\App\Http\Controllers\Admin\WorkingHourController::class, 'destroy'])->name('working-hours.destroy');
+        Route::post('working-hours/{workingHour}/toggle', [\App\Http\Controllers\Admin\WorkingHourController::class, 'toggle'])->name('working-hours.toggle');
+
+        // Shift Management
+        Route::get('shifts', [\App\Http\Controllers\Admin\ShiftController::class, 'index'])->name('shifts.index');
+        Route::post('shifts', [\App\Http\Controllers\Admin\ShiftController::class, 'store'])->name('shifts.store');
+        Route::put('shifts/{shift}', [\App\Http\Controllers\Admin\ShiftController::class, 'update'])->name('shifts.update');
+        Route::delete('shifts/{shift}', [\App\Http\Controllers\Admin\ShiftController::class, 'destroy'])->name('shifts.destroy');
+        Route::post('shifts/{shift}/add-member', [\App\Http\Controllers\Admin\ShiftController::class, 'addMember'])->name('shifts.add-member');
+        Route::delete('shifts/{shift}/members/{user}', [\App\Http\Controllers\Admin\ShiftController::class, 'removeMember'])->name('shifts.remove-member');
+        Route::post('shifts/{shift}/toggle', [\App\Http\Controllers\Admin\ShiftController::class, 'toggle'])->name('shifts.toggle');
+
+        // Overtime Management
+        Route::get('overtime', [\App\Http\Controllers\Admin\AdminOvertimeController::class, 'index'])->name('overtime.index');
+        Route::post('overtime/{overtime}/approve', [\App\Http\Controllers\OvertimeController::class, 'approve'])->name('overtime.approve');
+        Route::post('overtime/{overtime}/reject', [\App\Http\Controllers\OvertimeController::class, 'reject'])->name('overtime.reject');
     });
 
     // =============================================
@@ -130,4 +150,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('read');
         Route::post('/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('read-all');
     });
+
+    // =============================================
+    // WORK ENDED & OVERTIME ROUTES
+    // =============================================
+    Route::get('/work-ended', function () {
+        return view('work-ended');
+    })->name('work.ended');
+
+    Route::post('/overtime/request', [\App\Http\Controllers\OvertimeController::class, 'request'])->name('overtime.request');
+
+    // =============================================
+    // SHIFT INFO ROUTE (For staff operasional)
+    // =============================================
+    Route::get('/my-shift', [\App\Http\Controllers\ShiftInfoController::class, 'index'])->name('shift.info');
 });

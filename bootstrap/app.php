@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Check working hours untuk web requests (after session started)
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckWorkingHours::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

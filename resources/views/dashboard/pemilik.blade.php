@@ -50,6 +50,13 @@
     </div>
 </div>
 
+<!-- Working Hours Widget untuk Pemilik -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        @include('components.working-hours-widget')
+    </div>
+</div>
+
 <div class="row g-4">
     <!-- Monthly Transactions -->
     <div class="col-md-6">

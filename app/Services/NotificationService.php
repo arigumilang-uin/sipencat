@@ -73,11 +73,11 @@ class NotificationService
     }
 
     /**
-     * Notify Admin & Gudang about low stock
+     * Notify Admin & Staff Operasional about low stock
      */
     public function notifyLowStock(Barang $barang): void
     {
-        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::GUDANG])
+        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL])
             ->where('is_active', true)
             ->get();
 
@@ -95,11 +95,11 @@ class NotificationService
     }
 
     /**
-     * Notify Admin & Gudang about out of stock
+     * Notify Admin & Staff Operasional about out of stock
      */
     public function notifyOutOfStock(Barang $barang): void
     {
-        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::GUDANG])
+        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL])
             ->where('is_active', true)
             ->get();
 
@@ -144,11 +144,11 @@ class NotificationService
     }
 
     /**
-     * Notify Admin & Gudang about large transaction
+     * Notify Admin & Staff Operasional about large transaction
      */
     public function notifyLargeTransaction(string $type, string $barangName, int $quantity): void
     {
-        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::GUDANG])
+        $users = User::whereIn('role', [UserRole::ADMIN, UserRole::STAFF_OPERASIONAL])
             ->where('is_active', true)
             ->get();
 
@@ -341,5 +341,59 @@ class NotificationService
             ->latest()
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Notify admins about overtime request
+     */
+    public static function notifyAdminsAboutOvertimeRequest($overtime)
+    {
+        $admins = User::where('role', UserRole::ADMIN)->get();
+        
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'overtime_request',
+                'title' => 'Permintaan Perpanjangan Waktu',
+                'message' => "{$overtime->user->name} mengajukan perpanjangan waktu {$overtime->requested_minutes} menit. Alasan: {$overtime->reason}",
+                'data' => json_encode(['overtime_id' => $overtime->id, 'user_id' => $overtime->user_id]),
+                'icon' => 'clock-history',
+                'color' => 'warning',
+            ]);
+        }
+    }
+
+    /**
+     * Notify user about overtime approval
+     */
+    public static function notifyUserAboutOvertimeApproval($overtime)
+    {
+        Notification::create([
+            'user_id' => $overtime->user_id,
+            'type' => 'overtime_approved',
+            'title' => 'Perpanjangan Waktu Disetujui',
+            'message' => "Permintaan perpanjangan waktu Anda telah disetujui. Anda mendapat tambahan waktu {$overtime->granted_minutes} menit." . 
+                        ($overtime->admin_notes ? " Catatan: {$overtime->admin_notes}" : ""),
+            'data' => json_encode(['overtime_id' => $overtime->id, 'expires_at' => $overtime->expires_at]),
+            'icon' => 'check-circle',
+            'color' => 'success',
+        ]);
+    }
+
+    /**
+     * Notify user about overtime rejection
+     */
+    public static function notifyUserAboutOvertimeRejection($overtime)
+    {
+        Notification::create([
+            'user_id' => $overtime->user_id,
+            'type' => 'overtime_rejected',
+            'title' => 'Perpanjangan Waktu Ditolak',
+            'message' => "Permintaan perpanjangan waktu Anda tidak dapat disetujui. " . 
+                        ($overtime->admin_notes ? "Alasan: {$overtime->admin_notes}" : "Silakan hubungi administrator untuk informasi lebih lanjut."),
+            'data' => json_encode(['overtime_id' => $overtime->id]),
+            'icon' => 'x-circle',
+            'color' => 'danger',
+        ]);
     }
 }
