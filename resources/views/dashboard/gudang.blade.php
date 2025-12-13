@@ -5,130 +5,155 @@
 @section('page-subtitle', 'Manajemen stok dan inventory')
 
 @section('content')
-<div class="row g-4 mb-4">
-    <!-- Stats Cards -->
-    <div class="col-md-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Total Barang</h6>
-                        <h2 class="mb-0">{{ $stats['total_barang'] }}</h2>
-                    </div>
-                    <i class="bi bi-box-seam fs-1 opacity-50"></i>
-                </div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+    <!-- Total Barang -->
+    <div class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+        <dt>
+            <div class="absolute rounded-md bg-emerald-500 p-3">
+                <i class="bi bi-box-seam text-white text-xl"></i>
             </div>
-        </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Total Barang</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-1 sm:pb-2">
+            <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_barang'] }}</p>
+        </dd>
     </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Stok Rendah</h6>
-                        <h2 class="mb-0">{{ $stats['low_stock_items'] }}</h2>
-                    </div>
-                    <i class="bi bi-exclamation-triangle-fill fs-1 opacity-50"></i>
-                </div>
+    <!-- Stok Rendah -->
+    <div class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+        <dt>
+            <div class="absolute rounded-md bg-amber-500 p-3">
+                <i class="bi bi-exclamation-triangle-fill text-white text-xl"></i>
             </div>
-        </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Stok Rendah</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-1 sm:pb-2">
+            <p class="text-2xl font-semibold text-gray-900">{{ $stats['low_stock_items'] }}</p>
+            @if($stats['low_stock_items'] > 0)
+                <span class="ml-2 text-xs font-medium text-amber-600">Perlu restock</span>
+            @endif
+        </dd>
     </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Stok Habis</h6>
-                        <h2 class="mb-0">{{ $stats['out_of_stock_items'] }}</h2>
-                    </div>
-                    <i class="bi bi-x-circle-fill fs-1 opacity-50"></i>
-                </div>
+    <!-- Stok Habis -->
+    <div class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+        <dt>
+            <div class="absolute rounded-md bg-red-500 p-3">
+                <i class="bi bi-x-circle-fill text-white text-xl"></i>
             </div>
-        </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">Stok Habis</p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-1 sm:pb-2">
+            <p class="text-2xl font-semibold text-gray-900">{{ $stats['out_of_stock_items'] }}</p>
+            @if($stats['out_of_stock_items'] > 0)
+                <span class="ml-2 text-xs font-medium text-red-600">Kritis!</span>
+            @endif
+        </dd>
     </div>
 </div>
 
-<!-- Working Hours Widget -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-4">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="lg:col-span-1">
         @include('components.working-hours-widget')
     </div>
     
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">
-                    <i class="bi bi-info-circle me-2"></i>
+    <div class="lg:col-span-2">
+        <div class="rounded-lg bg-white shadow-sm border border-gray-100 h-full">
+            <div class="border-b border-gray-200 px-4 py-4 sm:px-6 bg-gray-50/50">
+                <h3 class="text-base font-semibold leading-6 text-gray-900">
+                    <i class="bi bi-info-circle mr-2 text-blue-500"></i>
                     Informasi Cepat
-                </h5>
+                </h3>
             </div>
-            <div class="card-body">
-                <p class="mb-2"><strong>Selamat datang, {{ auth()->user()->name }}!</strong></p>
-                <p class="mb-0 text-muted">Anda sedang mengelola sistem inventory. Pastikan semua transaksi tercatat dengan benar.</p>
+            <div class="px-4 py-5 sm:p-6">
+                <p class="text-lg font-medium text-gray-900 mb-2">Selamat datang, {{ auth()->user()->name }}!</p>
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    Anda sedang login sebagai Staff Gudang. Sistem ini akan mencatat waktu mulai dan selesai kerja Anda secara otomatis.
+                    Pastikan untuk selalu mencatat barang masuk dan keluar dengan teliti.
+                </p>
+                <div class="mt-4 flex gap-3">
+                    <a href="{{ route('inventory.barang-masuk.index') }}" class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition-colors">
+                        <i class="bi bi-box-arrow-in-down mr-2"></i> Input Barang Masuk
+                    </a>
+                    <a href="{{ route('inventory.barang-keluar.index') }}" class="inline-flex items-center rounded-md bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 transition-colors">
+                        <i class="bi bi-box-arrow-up mr-2"></i> Input Barang Keluar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Recent Barang Masuk -->
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-box-arrow-in-down me-2"></i>
-                    Barang Masuk Terbaru
-                </h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    @forelse($stats['recent_barang_masuk'] as $item)
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{ $item->barang->nama_barang }}</strong>
-                                <span class="badge bg-success">+{{ $item->jumlah }}</span>
-                            </div>
-                            <small class="text-muted">{{ $item->tanggal->format('d/m/Y') }} - {{ $item->supplier->nama_supplier }}</small>
-                        </div>
-                    @empty
-                        <div class="list-group-item text-center text-muted">
-                            Belum ada transaksi
-                        </div>
-                    @endforelse
-                </div>
-            </div>
+    <div class="rounded-lg bg-white shadow-sm border border-gray-100">
+        <div class="border-b border-gray-200 px-4 py-4 sm:px-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">
+                <i class="bi bi-box-arrow-in-down mr-2 text-emerald-500"></i>
+                Barang Masuk Terbaru
+            </h3>
         </div>
+        <ul role="list" class="divide-y divide-gray-100">
+            @forelse($stats['recent_barang_masuk'] as $item)
+                <li class="flex items-center justify-between gap-x-6 py-4 px-4 hover:bg-gray-50 transition-colors">
+                    <div class="min-w-0">
+                        <div class="flex items-start gap-x-3">
+                            <p class="text-sm font-semibold leading-6 text-gray-900">{{ $item->barang->nama_barang }}</p>
+                        </div>
+                        <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                            <p class="whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</p>
+                            <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
+                            <p class="truncate">{{ $item->supplier->nama_supplier }}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-none items-center gap-x-4">
+                        <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                            +{{ $item->jumlah }}
+                        </span>
+                    </div>
+                </li>
+            @empty
+                <li class="py-8 text-center text-sm text-gray-500 italic">
+                    Belum ada transaksi barang masuk.
+                </li>
+            @endforelse
+        </ul>
     </div>
 
     <!-- Recent Barang Keluar -->
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-box-arrow-up me-2"></i>
-                    Barang Keluar Terbaru
-                </h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    @forelse($stats['recent_barang_keluar'] as $item)
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{ $item->barang->nama_barang }}</strong>
-                                <span class="badge bg-danger">-{{ $item->jumlah }}</span>
-                            </div>
-                            <small class="text-muted">{{ $item->tanggal->format('d/m/Y') }} - {{ $item->tujuan }}</small>
-                        </div>
-                    @empty
-                        <div class="list-group-item text-center text-muted">
-                            Belum ada transaksi
-                        </div>
-                    @endforelse
-                </div>
-            </div>
+    <div class="rounded-lg bg-white shadow-sm border border-gray-100">
+        <div class="border-b border-gray-200 px-4 py-4 sm:px-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">
+                <i class="bi bi-box-arrow-up mr-2 text-rose-500"></i>
+                Barang Keluar Terbaru
+            </h3>
         </div>
+        <ul role="list" class="divide-y divide-gray-100">
+            @forelse($stats['recent_barang_keluar'] as $item)
+                <li class="flex items-center justify-between gap-x-6 py-4 px-4 hover:bg-gray-50 transition-colors">
+                    <div class="min-w-0">
+                        <div class="flex items-start gap-x-3">
+                            <p class="text-sm font-semibold leading-6 text-gray-900">{{ $item->barang->nama_barang }}</p>
+                        </div>
+                        <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                            <p class="whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</p>
+                            <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
+                            <p class="truncate">{{ $item->tujuan }}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-none items-center gap-x-4">
+                        <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                            -{{ $item->jumlah }}
+                        </span>
+                    </div>
+                </li>
+            @empty
+                <li class="py-8 text-center text-sm text-gray-500 italic">
+                    Belum ada transaksi barang keluar.
+                </li>
+            @endforelse
+        </ul>
     </div>
 </div>
 @endsection

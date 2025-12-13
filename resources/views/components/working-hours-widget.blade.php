@@ -3,46 +3,51 @@
 @endphp
 
 @if($workingHours && $workingHours['has_restriction'])
-    <div class="card border-primary shadow-sm">
-        <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <h5 class="mb-0">
-                <i class="bi bi-clock-history me-2"></i>
+    <div class="rounded-lg bg-white shadow-sm border border-gray-100 overflow-hidden">
+        <div class="border-b border-gray-200 px-4 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+            <h5 class="flex items-center text-base font-semibold">
+                <i class="bi bi-clock-history mr-2"></i>
                 Informasi Jam Kerja Anda
             </h5>
         </div>
-        <div class="card-body">
+        <div class="p-5 space-y-4">
             {{-- Extension Mode Badge --}}
             @if(isset($workingHours['is_extension']) && $workingHours['is_extension'])
-                <div class="alert alert-warning border-warning mb-3">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-hourglass-split fs-4 me-2"></i>
-                        <div>
-                            <strong>Mode Perpanjangan Waktu</strong>
-                            <p class="mb-0 small">Anda mendapat tambahan {{ $workingHours['granted_minutes'] }} menit waktu akses</p>
+                <div class="rounded-md bg-amber-50 border border-amber-200 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-hourglass-split text-amber-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-amber-800">Mode Perpanjangan Waktu</h3>
+                            <div class="mt-1 text-sm text-amber-700">
+                                <p>Anda mendapat tambahan {{ $workingHours['granted_minutes'] }} menit waktu akses.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endif
             
             @if(isset($workingHours['shift_name']) && $workingHours['shift_name'])
-                <p class="mb-2">
-                    <strong><i class="bi bi-people me-1"></i> Shift:</strong> 
-                    <span class="badge bg-info ms-1">{{ $workingHours['shift_name'] }}</span>
-                </p>
+                <div class="flex items-center justify-between text-sm">
+                    <strong class="text-gray-600 flex items-center"><i class="bi bi-people mr-2"></i> Shift:</strong> 
+                    <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                        {{ $workingHours['shift_name'] }}
+                    </span>
+                </div>
             @endif
             
-            <p class="mb-3">
+            <div class="flex items-center justify-between text-sm">
                 @if(isset($workingHours['is_extension']) && $workingHours['is_extension'])
-                    <strong><i class="bi bi-hourglass-top me-1"></i> Waktu Perpanjangan:</strong><br>
+                    <strong class="text-gray-600 flex items-center"><i class="bi bi-hourglass-top mr-2"></i> Waktu Ekstensi:</strong>
                 @else
-                    <strong><i class="bi bi-calendar-check me-1"></i> Jam Kerja Hari Ini:</strong><br>
+                    <strong class="text-gray-600 flex items-center"><i class="bi bi-calendar-check mr-2"></i> Jam Kerja:</strong>
                 @endif
-                <span class="fs-5 text-primary">
-                    <i class="bi bi-clock me-1"></i>
+                <span class="text-lg font-bold text-indigo-600 font-mono tracking-tight">
                     {{ \Carbon\Carbon::parse($workingHours['start_time'])->format('H:i') }} - 
                     {{ \Carbon\Carbon::parse($workingHours['end_time'])->format('H:i') }}
                 </span>
-            </p>
+            </div>
             
             @if($workingHours['is_active_now'])
                 @php
@@ -51,73 +56,88 @@
                 @endphp
                 
                 @if(!$remaining['expired'])
-                    <div class="alert alert-success border-0 shadow-sm mb-0" id="countdown-container">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0">
-                                <i class="bi bi-hourglass-split me-1"></i>
+                    <div class="rounded-lg bg-emerald-50 border border-emerald-100 p-4" id="countdown-container">
+                        <div class="flex justify-between items-center mb-3">
+                            <h6 class="text-sm font-semibold text-emerald-900 flex items-center">
+                                <i class="bi bi-hourglass-split mr-2"></i>
                                 <span id="countdown-label">Sisa Waktu Kerja</span>
                             </h6>
                             @if($remaining['total_minutes'] <= 30)
-                                <span class="badge bg-warning text-dark">
-                                    <i class="bi bi-exclamation-triangle"></i> Segera Berakhir
+                                <span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20 animate-pulse">
+                                    <i class="bi bi-exclamation-triangle mr-1"></i> Segera Berakhir
                                 </span>
                             @endif
                         </div>
                         
                         <!-- Countdown Timer -->
-                        <div class="countdown-timer text-center mb-3" 
+                        <div class="countdown-timer text-center mb-4" 
                              data-end-time="{{ \Carbon\Carbon::parse($workingHours['end_time'])->timestamp }}">
-                            <h2 class="mb-0 fw-bold text-dark" id="countdown-display" style="font-family: 'Courier New', monospace;">
+                            <h2 class="text-3xl font-bold text-gray-900 font-mono tracking-wider" id="countdown-display">
                                 {{ sprintf('%02d:%02d:%02d', $remaining['hours'], $remaining['minutes'], $remaining['seconds']) }}
                             </h2>
-                            <small class="text-muted">Jam : Menit : Detik</small>
+                            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Jam : Menit : Detik</p>
                         </div>
                         
                         <!-- Progress Bar -->
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Progress</small>
-                                <small class="text-muted"><span id="progress-percentage">{{ number_format($percentage, 1) }}</span>%</small>
-                            </div>
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                     id="work-progress-bar"
-                                     role="progressbar" 
-                                     style="width: {{ $percentage }}%; background: linear-gradient(90deg, #56ab2f 0%, #a8e063 100%);"
-                                     aria-valuenow="{{ $percentage }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-emerald-600 bg-emerald-200">
+                                        Progress
+                                    </span>
                                 </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-semibold inline-block text-emerald-600">
+                                        <span id="progress-percentage">{{ number_format($percentage, 1) }}</span>%
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-emerald-200">
+                                <div id="work-progress-bar"
+                                     style="width: {{ $percentage }}%" 
+                                     class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-1000"></div>
                             </div>
                         </div>
                         
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <small class="text-muted">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>
-                                Masuk: {{ \Carbon\Carbon::parse($workingHours['start_time'])->format('H:i') }}
-                            </small>
-                            <small class="text-muted">
-                                <i class="bi bi-box-arrow-right me-1"></i>
-                                Keluar: {{ \Carbon\Carbon::parse($workingHours['end_time'])->format('H:i') }}
-                            </small>
+                        <div class="flex justify-between items-center text-xs text-gray-500 mt-2 border-t border-emerald-200/50 pt-2">
+                            <span>
+                                <i class="bi bi-box-arrow-in-right mr-1"></i>
+                                Masuk: <strong>{{ \Carbon\Carbon::parse($workingHours['start_time'])->format('H:i') }}</strong>
+                            </span>
+                            <span>
+                                <i class="bi bi-box-arrow-right mr-1"></i>
+                                Keluar: <strong>{{ \Carbon\Carbon::parse($workingHours['end_time'])->format('H:i') }}</strong>
+                            </span>
                         </div>
                     </div>
                 @else
-                    <div class="alert alert-danger mb-0">
-                        <i class="bi bi-clock-fill me-2"></i>
-                        <strong>Jam Kerja Telah Berakhir</strong>
-                        <p class="mb-0 mt-2 small">
-                            Waktu kerja Anda berakhir pada pukul {{ \Carbon\Carbon::parse($workingHours['end_time'])->format('H:i') }}.
-                        </p>
+                    <div class="rounded-md bg-red-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-clock-fill text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Jam Kerja Telah Berakhir</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>Waktu kerja Anda berakhir pada pukul {{ \Carbon\Carbon::parse($workingHours['end_time'])->format('H:i') }}.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endif
             @else
-                <div class="alert alert-warning border-0 shadow-sm mb-0">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    <strong>Di Luar Jam Kerja</strong>
-                    <p class="mb-0 mt-2 small">
-                        Jam kerja dimulai pukul {{ \Carbon\Carbon::parse($workingHours['start_time'])->format('H:i') }} WIB.
-                    </p>
+                <div class="rounded-md bg-amber-50 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-exclamation-triangle text-amber-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-amber-800">Di Luar Jam Kerja</h3>
+                            <div class="mt-2 text-sm text-amber-700">
+                                <p>Jam kerja dimulai pukul {{ \Carbon\Carbon::parse($workingHours['start_time'])->format('H:i') }} WIB.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>
@@ -151,11 +171,17 @@
                 
                 // Time's up!
                 display.textContent = '00:00:00';
-                container.classList.remove('alert-success', 'alert-warning');
-                container.classList.add('alert-danger');
-                label.innerHTML = '<i class="bi bi-clock-fill me-1"></i> Jam Kerja Berakhir';
+                container.classList.remove('bg-emerald-50', 'border-emerald-100', 'bg-amber-50', 'border-amber-100');
+                container.classList.add('bg-red-50', 'border-red-100');
+                
+                const labelText = container.querySelector('h6');
+                if(labelText) labelText.className = "text-sm font-semibold text-red-900 flex items-center";
+                label.innerHTML = '<i class="bi bi-clock-fill mr-2"></i> Jam Kerja Berakhir';
+                
+                progressBar.classList.remove('from-emerald-500', 'to-emerald-400');
+                progressBar.classList.add('bg-red-600'); 
                 progressBar.style.width = '100%';
-                progressBar.style.background = 'linear-gradient(90deg, #eb3349 0%, #f45c43 100%)';
+                
                 progressText.textContent = '100.0';
                 
                 // Check if redirect message already exists
@@ -163,8 +189,8 @@
                     // Show redirecting message (only once)
                     const redirectMessage = document.createElement('div');
                     redirectMessage.id = 'redirect-message';
-                    redirectMessage.className = 'alert alert-info mt-2 mb-0';
-                    redirectMessage.innerHTML = '<i class="bi bi-arrow-right-circle me-2"></i> Mengalihkan ke halaman akhir kerja dalam <span id="redirect-countdown">3</span> detik...';
+                    redirectMessage.className = 'mt-4 rounded-md bg-blue-50 p-3';
+                    redirectMessage.innerHTML = '<div class="flex"><div class="flex-shrink-0"><i class="bi bi-arrow-right-circle text-blue-400"></i></div><div class="ml-3 flex-1 md:flex md:justify-between"><p class="text-sm text-blue-700">Mengalihkan ke halaman akhir kerja dalam <span id="redirect-countdown" class="font-bold">3</span> detik...</p></div></div>';
                     container.appendChild(redirectMessage);
                     
                     // Countdown before redirect
@@ -198,15 +224,26 @@
             
             // Color transitions based on remaining time
             if (remaining <= 300) { // < 5 minutes
-                container.classList.remove('alert-success', 'alert-warning');
-                container.classList.add('alert-danger');
-                label.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i> SEGERA BERAKHIR!';
-                progressBar.style.background = 'linear-gradient(90deg, #eb3349 0%, #f45c43 100%)';
+                container.classList.remove('bg-emerald-50', 'border-emerald-100', 'bg-amber-50', 'border-amber-100');
+                container.classList.add('bg-red-50', 'border-red-100');
+                const labelText = container.querySelector('h6');
+                if(labelText) labelText.className = "text-sm font-semibold text-red-900 flex items-center";
+                
+                label.innerHTML = '<i class="bi bi-exclamation-circle mr-2"></i> SEGERA BERAKHIR!';
+                
+                progressBar.classList.remove('from-emerald-500', 'to-emerald-400', 'from-amber-500', 'to-amber-400');
+                progressBar.classList.add('bg-gradient-to-r', 'from-red-500', 'to-red-600');
+                
             } else if (remaining <= 1800) { // < 30 minutes  
-                container.classList.remove('alert-success', 'alert-danger');
-                container.classList.add('alert-warning');
-                label.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i> Segera Berakhir';
-                progressBar.style.background = 'linear-gradient(90deg, #f7971e 0%, #ffd200 100%)';
+                container.classList.remove('bg-emerald-50', 'border-emerald-100', 'bg-red-50', 'border-red-100');
+                container.classList.add('bg-amber-50', 'border-amber-100');
+                const labelText = container.querySelector('h6');
+                if(labelText) labelText.className = "text-sm font-semibold text-amber-900 flex items-center";
+
+                label.innerHTML = '<i class="bi bi-exclamation-triangle mr-2"></i> Segera Berakhir';
+                
+                progressBar.classList.remove('from-emerald-500', 'to-emerald-400');
+                progressBar.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-amber-400');
             }
         }
         
@@ -219,24 +256,32 @@
     </script>
     @endpush
 @elseif($workingHours && !$workingHours['has_restriction'])
-    <div class="card border-success shadow-sm">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">
-                <i class="bi bi-check-circle me-2"></i>
+    <div class="rounded-lg bg-white shadow-sm border border-gray-100 overflow-hidden">
+        <div class="border-b border-gray-200 px-4 py-4 bg-emerald-600 text-white">
+            <h5 class="flex items-center text-base font-semibold">
+                <i class="bi bi-check-circle mr-2"></i>
                 Status Jam Kerja
             </h5>
         </div>
-        <div class="card-body">
-            <div class="alert alert-success mb-0">
-                <i class="bi bi-infinity me-2"></i>
-                <strong>{{ $workingHours['message'] }}</strong>
-                <p class="mb-0 mt-2 small">
-                    @if(auth()->user()->role->value === 'admin')
-                        Sebagai Administrator, Anda memiliki akses penuh ke sistem kapan saja.
-                    @else
-                        Tidak ada pembatasan jam kerja untuk Anda hari ini.
-                    @endif
-                </p>
+        <div class="p-5">
+            <div class="rounded-md bg-emerald-50 p-4 border border-emerald-100">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-infinity text-emerald-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-emerald-800">{{ $workingHours['message'] }}</h3>
+                        <div class="mt-2 text-sm text-emerald-700">
+                            <p>
+                                @if(auth()->user()->role->value === 'admin')
+                                    Sebagai Administrator, Anda memiliki akses penuh ke sistem kapan saja.
+                                @else
+                                    Tidak ada pembatasan jam kerja untuk Anda hari ini.
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

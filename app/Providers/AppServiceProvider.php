@@ -78,5 +78,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('canViewAuditLogs', function (User $user) {
             return $user->role === UserRole::ADMIN;
         });
+
+        // Supplier Report - Strategic Business Data
+        // Only ADMIN & PEMILIK can view supplier relationships
+        // Staff Operasional: NO ACCESS (operational role only, not strategic)
+        Gate::define('canViewSupplierReport', function (User $user) {
+            return in_array($user->role, [UserRole::ADMIN, UserRole::PEMILIK]);
+        });
     }
 }

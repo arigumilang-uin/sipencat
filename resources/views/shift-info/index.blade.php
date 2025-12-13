@@ -5,198 +5,212 @@
 @section('page-subtitle', 'Lihat informasi shift dan jadwal kerja Anda')
 
 @section('content')
-<div class="container-fluid">
+<div class="max-w-7xl mx-auto">
     @if(!$hasShift)
         {{-- No Shift Assigned --}}
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="alert alert-warning">
-                    <h5><i class="bi bi-exclamation-triangle me-2"></i> Belum Ada Shift</h5>
-                    <p class="mb-0">{{ $message }}</p>
+        <div class="rounded-md bg-yellow-50 p-4 border border-yellow-200">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-exclamation-triangle text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Belum Ada Shift</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>{{ $message }}</p>
+                    </div>
                 </div>
             </div>
         </div>
     @else
         {{-- Shift Information --}}
-        <div class="row">
-            <div class="col-md-12">
-                {{-- Shift Header Card --}}
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h3 class="mb-2">
-                                    <i class="bi bi-people-fill text-primary me-2"></i>
-                                    {{ $shift->name }}
-                                </h3>
-                                <p class="text-muted mb-0">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    {{ $shift->description ?? 'Tidak ada deskripsi' }}
-                                </p>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <span class="badge bg-{{ $shift->is_active ? 'success' : 'secondary' }} fs-6 px-3 py-2">
-                                    <i class="bi bi-{{ $shift->is_active ? 'check-circle' : 'x-circle' }} me-1"></i>
-                                    {{ $shift->is_active ? 'Aktif' : 'Nonaktif' }}
-                                </span>
-                            </div>
+        
+        <!-- Header Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+            <div class="md:flex md:items-center md:justify-between">
+                <div class="flex items-center space-x-5">
+                    <div class="flex-shrink-0">
+                        <div class="h-16 w-16 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="bi bi-people-fill text-3xl text-indigo-600"></i>
                         </div>
                     </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ $shift->name }}</h1>
+                        <p class="text-sm font-medium text-gray-500 flex items-center mt-1">
+                            <i class="bi bi-info-circle mr-1"></i>
+                            {{ $shift->description ?? 'Tidak ada deskripsi' }}
+                        </p>
+                    </div>
                 </div>
-
-                {{-- Current Status Alert --}}
-                <div class="alert alert-{{ $currentStatus['color'] }} mb-4">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-clock-fill fs-4 me-3"></i>
-                        <div>
-                            <strong>Status Saat Ini:</strong> {{ $currentStatus['message'] }}
-                            <br><small>{{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY - HH:mm') }} WIB</small>
+                <div class="mt-4 md:mt-0 flex">
+                    @if($shift->is_active)
+                        <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                            <i class="bi bi-check-circle mr-1.5"></i> Aktif
+                        </span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 text-sm font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                            <i class="bi bi-x-circle mr-1.5"></i> Nonaktif
+                        </span>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Current Status -->
+            <div class="mt-6 border-t border-gray-100 pt-6">
+                @php
+                    $statusColor = $currentStatus['color'] == 'success' ? 'emerald' : ($currentStatus['color'] == 'warning' ? 'amber' : 'red');
+                @endphp
+                <div class="rounded-md bg-{{ $statusColor }}-50 p-4 border border-{{ $statusColor }}-100">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-clock-fill text-{{ $statusColor }}-400 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-{{ $statusColor }}-800">
+                                Status Saat Ini: {{ $currentStatus['message'] }}
+                            </h3>
+                            <p class="mt-1 text-xs text-{{ $statusColor }}-700">
+                                {{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY - HH:mm') }} WIB
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            {{-- Working Hours Schedule --}}
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-calendar-week me-2"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Schedule -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center">
+                            <i class="bi bi-calendar-week mr-2 text-indigo-500"></i>
                             Jadwal Jam Kerja
-                        </h5>
+                        </h3>
                     </div>
-                    <div class="card-body p-0">
-                        @if($workingHours->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th width="40%">Hari</th>
-                                            <th width="25%">Jam Mulai</th>
-                                            <th width="25%">Jam Selesai</th>
-                                            <th width="10%">Durasi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($workingHours as $wh)
-                                            @php
-                                                $isToday = strtolower(now()->format('l')) === $wh->day_of_week;
-                                                $start = \Carbon\Carbon::parse($wh->start_time);
-                                                $end = \Carbon\Carbon::parse($wh->end_time);
-                                                $duration = $start->diffInHours($end);
-                                            @endphp
-                                            <tr class="{{ $isToday ? 'table-active fw-bold' : '' }}">
-                                                <td>
+                    
+                    @if($workingHours->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Hari</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Jam Mulai</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Jam Selesai</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Durasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($workingHours as $wh)
+                                        @php
+                                            $isToday = strtolower(now()->format('l')) === $wh->day_of_week;
+                                            $start = \Carbon\Carbon::parse($wh->start_time);
+                                            $end = \Carbon\Carbon::parse($wh->end_time);
+                                            $duration = $start->diffInHours($end);
+                                        @endphp
+                                        <tr class="{{ $isToday ? 'bg-indigo-50/50' : 'hover:bg-gray-50' }} transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {{ $isToday ? 'text-indigo-700' : 'text-gray-900' }}">
+                                                <div class="flex items-center">
                                                     @if($isToday)
-                                                        <i class="bi bi-arrow-right-circle-fill text-primary me-2"></i>
+                                                        <i class="bi bi-calendar-check-fill mr-2 text-indigo-600"></i>
                                                     @endif
                                                     {{ $wh->day_name }}
                                                     @if($isToday)
-                                                        <span class="badge bg-primary ms-2">Hari Ini</span>
+                                                        <span class="ml-2 inline-flex items-center rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-700">Hari Ini</span>
                                                     @endif
-                                                </td>
-                                                <td>
-                                                    <i class="bi bi-clock me-1"></i>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div class="flex items-center">
+                                                    <i class="bi bi-clock mr-2 text-gray-400"></i>
                                                     {{ $start->format('H:i') }}
-                                                </td>
-                                                <td>
-                                                    <i class="bi bi-clock-fill me-1"></i>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div class="flex items-center">
+                                                    <i class="bi bi-clock-fill mr-2 text-gray-400"></i>
                                                     {{ $end->format('H:i') }}
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $duration }} jam</span>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="p-4 text-center text-muted">
-                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                                <p class="mb-0">Belum ada jadwal jam kerja untuk shift ini</p>
-                            </div>
-                        @endif
-                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                <span class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                                                    {{ $duration }} Jam
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-10">
+                            <i class="bi bi-calendar-x text-4xl text-gray-300 mb-3 block"></i>
+                            <p class="text-gray-500">Belum ada jadwal jam kerja untuk shift ini</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            {{-- Shift Members --}}
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-people me-2"></i>
-                            Anggota Shift ({{ $members->count() }})
-                        </h5>
+            <!-- Right Column: Members & Stats -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Members Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center justify-between">
+                            <span class="flex items-center">
+                                <i class="bi bi-people mr-2 text-indigo-500"></i> Anggota Shift
+                            </span>
+                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                                {{ $members->count() }}
+                            </span>
+                        </h3>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            @forelse($members as $member)
-                                <div class="list-group-item {{ $member->id === auth()->id() ? 'bg-light' : '' }}">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle bg-{{ $member->id === auth()->id() ? 'primary' : 'secondary' }} text-white d-flex align-items-center justify-content-center" 
-                                                 style="width: 40px; height: 40px;">
-                                                <i class="bi bi-person-fill"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-0">
-                                                {{ $member->name }}
-                                                @if($member->id === auth()->id())
-                                                    <span class="badge bg-primary ms-1">Anda</span>
-                                                @endif
-                                            </h6>
-                                            <small class="text-muted">
-                                                <i class="bi bi-envelope me-1"></i>
-                                                {{ $member->email }}
-                                            </small>
-                                        </div>
-                                    </div>
+                    <ul role="list" class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                        @forelse($members as $member)
+                            <li class="flex items-center gap-x-4 px-6 py-4 hover:bg-gray-50 transition-colors {{ $member->id === auth()->id() ? 'bg-indigo-50/30' : '' }}">
+                                <div class="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold border-2 border-white shadow-sm">
+                                    {{ substr($member->name, 0, 1) }}
                                 </div>
-                            @empty
-                                <div class="p-3 text-center text-muted">
-                                    Tidak ada anggota
+                                <div class="min-w-0 flex-auto">
+                                    <p class="text-sm font-semibold leading-6 text-gray-900 flex items-center">
+                                        {{ $member->name }}
+                                        @if($member->id === auth()->id())
+                                            <span class="ml-2 inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">Anda</span>
+                                        @endif
+                                    </p>
+                                    <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{ $member->email }}</p>
                                 </div>
-                            @endforelse
-                        </div>
-                    </div>
+                            </li>
+                        @empty
+                            <li class="py-6 text-center text-sm text-gray-500 italic">
+                                Tidak ada anggota
+                            </li>
+                        @endforelse
+                    </ul>
                 </div>
 
-                {{-- Quick Stats --}}
-                <div class="card border-0 shadow-sm mt-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-3">Statistik Shift</h6>
-                        <div class="row text-center">
-                            <div class="col-6 mb-3">
-                                <div class="border rounded p-2">
-                                    <h4 class="mb-0 text-primary">{{ $members->count() }}</h4>
-                                    <small class="text-muted">Anggota</small>
-                                </div>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <div class="border rounded p-2">
-                                    <h4 class="mb-0 text-success">{{ $workingHours->count() }}</h4>
-                                    <small class="text-muted">Hari Kerja</small>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="border rounded p-2">
-                                    <h4 class="mb-0 text-info">
-                                        {{ $workingHours->sum(function($wh) {
-                                            $start = \Carbon\Carbon::parse($wh->start_time);
-                                            $end = \Carbon\Carbon::parse($wh->end_time);
-                                            return $start->diffInHours($end);
-                                        }) }}
-                                    </h4>
-                                    <small class="text-muted">Total Jam/Minggu</small>
-                                </div>
-                            </div>
+                <!-- Stats Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Statistik Shift</h3>
+                    <dl class="grid grid-cols-2 gap-x-4 gap-y-4">
+                        <div class="border-l-4 border-indigo-500 bg-gray-50 pl-4 py-2 rounded-r-md">
+                            <dt class="text-xs font-medium text-gray-500">Total Anggota</dt>
+                            <dd class="mt-1 text-xl font-bold tracking-tight text-indigo-600">{{ $members->count() }}</dd>
                         </div>
-                    </div>
+                        <div class="border-l-4 border-teal-500 bg-gray-50 pl-4 py-2 rounded-r-md">
+                            <dt class="text-xs font-medium text-gray-500">Hari Kerja/Minggu</dt>
+                            <dd class="mt-1 text-xl font-bold tracking-tight text-teal-600">{{ $workingHours->count() }}</dd>
+                        </div>
+                        <div class="col-span-2 border-l-4 border-blue-500 bg-gray-50 pl-4 py-2 rounded-r-md">
+                            <dt class="text-xs font-medium text-gray-500">Total Jam Kerja / Minggu</dt>
+                            <dd class="mt-1 text-xl font-bold tracking-tight text-blue-600">
+                                {{ $workingHours->sum(function($wh) {
+                                    $start = \Carbon\Carbon::parse($wh->start_time);
+                                    $end = \Carbon\Carbon::parse($wh->end_time);
+                                    return $start->diffInHours($end);
+                                }) }} Jam
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
             </div>
         </div>

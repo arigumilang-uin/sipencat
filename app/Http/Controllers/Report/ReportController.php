@@ -148,11 +148,15 @@ class ReportController extends Controller
     }
 
     /**
-     * Laporan per Supplier
+     * Laporan per Supplier - STRATEGIC DATA
+     * Contains sensitive business relationships
+     * Access: ADMIN & PEMILIK only
      */
     public function supplier(Request $request): View
     {
-        Gate::authorize('canViewReports');
+        // Defense in depth: Controller-level authorization check
+        // Even if route middleware bypassed, this catches unauthorized access
+        Gate::authorize('canViewSupplierReport');
 
         $query = Supplier::withCount('barangMasuk')
             ->withSum('barangMasuk', 'jumlah');

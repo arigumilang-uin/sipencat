@@ -3,199 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title') - SIPENCAT</title>
     
-    <title>@yield('title', 'SIPENCAT') - Sistem Pengamanan & Catatan Aset Terpadu</title>
+    <!-- Fonts: Plus Jakarta Sans (Modern & Geometric) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <!-- Custom CSS -->
+    <!-- Scripts & Styles -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
-        :root {
-            --sidebar-width: 260px;
-            --navbar-height: 60px;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
         }
-
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
-            color: white;
-            overflow-y: auto;
-            transition: all 0.3s;
-            z-index: 1000;
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-
-        .sidebar-brand {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.02); 
         }
-
-        .sidebar-brand h4 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 1.3rem;
-        }
-
-        .sidebar-menu {
-            padding: 15px 0;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            padding-left: 25px;
-        }
-
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border-left: 4px solid #60a5fa;
-        }
-
-        .sidebar-menu a i {
-            width: 24px;
-            margin-right: 12px;
-            font-size: 1.1rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-        }
-
-        /* Navbar */
-        .top-navbar {
-            height: var(--navbar-height);
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        /* Content Area */
-        .content-area {
-            padding: 30px;
-        }
-
-        /* Cards */
-        .card {
-            border: none;
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
         }
 
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            font-weight: 600;
+        /* Smooth Entry Animation */
+        .animate-enter {
+            animation: enter 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(15px);
         }
-
-        /* Alerts */
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                margin-left: calc(-1 * var(--sidebar-width));
-            }
-
-            .sidebar.show {
-                margin-left: 0;
-            }
-
-            .main-content {
-                margin-left: 0;
+        @keyframes enter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+        
+        /* Staggered Delay for children */
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        [x-cloak] { display: none !important; }
     </style>
-    
     @stack('styles')
 </head>
-<body>
-    @auth
-        <!-- Sidebar -->
-        @include('layouts.sidebar')
+<body class="antialiased text-slate-600 bg-slate-50" x-data="{ sidebarOpen: false }">
+    
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar (User Only) -->
+        @auth
+            @include('layouts.sidebar')
+        @endauth
 
         <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Navbar -->
-            @include('layouts.navbar')
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300 @auth lg:ml-72 @endauth">
+            
+            <!-- Navbar (User Only) -->
+            @auth
+                @include('layouts.navbar')
+            @endauth
 
-            <!-- Content Area -->
-            <div class="content-area">
-                <!-- Flash Messages -->
+            <!-- Page Content -->
+            <main class="w-full flex-grow {{ Auth::check() ? 'p-6 lg:p-10' : '' }} animate-enter">
+                
+                {{-- Flash Messages with Alpine --}}
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div x-data="{ show: true }" x-show="show" x-transition.duration.500ms 
+                         class="mb-6 rounded-2xl bg-emerald-50 border border-emerald-100 p-4 shadow-sm flex items-start animate-enter">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-check-circle-fill text-emerald-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3 w-0 flex-1 pt-0.5">
+                            <p class="text-sm font-medium text-emerald-800 text-base">{{ session('success') }}</p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0 flex">
+                            <button @click="show = false" class="bg-transparent rounded-md inline-flex text-emerald-500 hover:text-emerald-600 focus:outline-none">
+                                <span class="sr-only">Close</span>
+                                <i class="bi bi-x text-xl"></i>
+                            </button>
+                        </div>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div x-data="{ show: true }" x-show="show" x-transition.duration.500ms 
+                         class="mb-6 rounded-2xl bg-rose-50 border border-rose-100 p-4 shadow-sm flex items-start animate-enter">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-x-circle-fill text-rose-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3 w-0 flex-1 pt-0.5">
+                            <p class="text-sm font-medium text-rose-800 text-base">{{ session('error') }}</p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0 flex">
+                            <button @click="show = false" class="bg-transparent rounded-md inline-flex text-rose-500 hover:text-rose-600 focus:outline-none">
+                                <span class="sr-only">Close</span>
+                                <i class="bi bi-x text-xl"></i>
+                            </button>
+                        </div>
                     </div>
                 @endif
+                
+                <!-- Page Title Section (User Only) -->
+                @auth
+                    @hasSection('page-title')
+                        <div class="mb-8 animate-enter">
+                            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">@yield('page-title')</h1>
+                            @hasSection('page-subtitle')
+                                <p class="mt-2 text-lg text-slate-500 font-medium">@yield('page-subtitle')</p>
+                            @endif
+                        </div>
+                    @endif
+                @endauth
 
-                @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <strong>Terjadi kesalahan:</strong>
-                        <ul class="mb-0 mt-2">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                <!-- Page Content -->
                 @yield('content')
-            </div>
+                
+                <!-- Footer (User Only) -->
+                @auth
+                    <div class="mt-12 pt-6 border-t border-slate-200 text-center text-slate-400 text-sm animate-enter delay-300">
+                        &copy; {{ date('Y') }} SIPENCAT - Sistem Pengamanan & Catatan Aset Terpadu
+                    </div>
+                @endauth
+            </main>
         </div>
-    @else
-        <!-- Guest Layout -->
-        @yield('content')
-    @endauth
+        
+        <!-- Mobile Sidebar Overlay (User Only) -->
+        @auth
+            <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak
+                 class="fixed inset-0 z-20 bg-slate-900/50 backdrop-blur-sm transition-opacity lg:hidden"></div>
+        @endauth
+             
+    </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
     @stack('scripts')
 </body>
 </html>

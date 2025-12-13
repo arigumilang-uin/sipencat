@@ -122,8 +122,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/stock', [\App\Http\Controllers\Report\ReportController::class, 'stock'])->name('stock');
         Route::get('/barang-masuk', [\App\Http\Controllers\Report\ReportController::class, 'barangMasuk'])->name('barang-masuk');
         Route::get('/barang-keluar', [\App\Http\Controllers\Report\ReportController::class, 'barangKeluar'])->name('barang-keluar');
-        Route::get('/supplier', [\App\Http\Controllers\Report\ReportController::class, 'supplier'])->name('supplier');
         Route::get('/mutation', [\App\Http\Controllers\Report\ReportController::class, 'mutation'])->name('mutation');
+        
+        // Supplier Report - RESTRICTED (Strategic Data)
+        // Only ADMIN & PEMILIK - contains sensitive business relationships
+        Route::get('/supplier', [\App\Http\Controllers\Report\ReportController::class, 'supplier'])
+            ->name('supplier')
+            ->middleware('can:canViewSupplierReport');
     });
 
     // =============================================
