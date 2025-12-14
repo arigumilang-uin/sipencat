@@ -11,6 +11,12 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        // --- TAMBAHAN PENTING DI SINI ---
+        host: '0.0.0.0', // Membuka akses jaringan
+        hmr: {
+            host: '192.168.1.11', // IP Laptop Anda (sesuai log terminal tadi)
+        },
+        // --------------------------------
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

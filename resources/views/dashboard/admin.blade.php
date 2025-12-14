@@ -94,65 +94,75 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 animate-enter delay-200">
     
     <!-- Audit Log -->
-    <div class="lg:col-span-2 rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden">
-        <div class="border-b border-slate-100 px-6 py-5 flex justify-between items-center bg-slate-50/50">
-            <div>
-                <h3 class="text-lg font-bold text-slate-800">Aktivitas Terkini</h3>
-                <p class="text-xs text-slate-500 mt-1">Pantau perubahan data secara real-time.</p>
+    <div class="lg:col-span-2 rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] overflow-hidden ring-1 ring-slate-100/50">
+        <div class="border-b border-slate-100/50 px-8 py-6 flex justify-between items-center bg-gradient-to-r from-indigo-50/50 via-white to-white">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+                    <i class="bi bi-activity text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">Aktivitas Terkini</h3>
+                    <p class="text-xs font-medium text-slate-500">Monitoring real-time sistem</p>
+                </div>
             </div>
-            <a href="{{ route('admin.audit-logs.index') }}" class="group inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            <a href="{{ route('admin.audit-logs.index') }}" class="group flex items-center justify-center h-9 px-4 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-bold text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
                 Lihat Semua 
-                <i class="bi bi-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i>
+                <i class="bi bi-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
             </a>
         </div>
         
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100">
-                <thead class="bg-slate-50">
+            <table class="min-w-full">
+                <thead class="bg-slate-50/50">
                     <tr>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Waktu</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">User</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Aksi</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Target</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">IP</th>
+                        <th scope="col" class="px-8 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">Waktu</th>
+                        <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">User</th>
+                        <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">Aksi</th>
+                        <th scope="col" class="hidden sm:table-cell px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">Target</th>
+                        <th scope="col" class="hidden md:table-cell px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">IP</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody class="divide-y divide-slate-50 bg-white">
                     @forelse($stats['recent_audit_logs'] as $log)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
-                                <span class="font-mono text-xs">{{ $log->created_at->format('H:i') }}</span>
-                                <span class="text-xs text-slate-400 ml-1">{{ $log->created_at->format('d/m') }}</span>
+                        <tr class="hover:bg-indigo-50/30 transition-colors duration-200 group">
+                            <td class="whitespace-nowrap px-8 py-5 text-sm">
+                                <span class="font-bold text-slate-700">{{ $log->created_at->format('H:i') }}</span>
+                                <span class="text-xs text-slate-400 ml-1 font-medium">{{ $log->created_at->format('d M') }}</span>
                             </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-700">
-                                <div class="flex items-center">
-                                    <div class="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold mr-2 text-slate-500 uppercase border border-slate-200">
+                            <td class="whitespace-nowrap px-6 py-5 text-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 uppercase shadow-inner">
                                         {{ substr($log->user->name ?? 'S', 0, 1) }}
                                     </div>
-                                    {{ $log->user->name ?? 'System' }}
+                                    <span class="font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">{{ $log->user->name ?? 'System' }}</span>
                                 </div>
                             </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset
-                                    {{ $log->action === 'created' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 
-                                      ($log->action === 'updated' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' : 
-                                      ($log->action === 'deleted' ? 'bg-rose-50 text-rose-700 ring-rose-600/20' : 'bg-slate-50 text-slate-700 ring-slate-600/20')) }}">
+                            <td class="whitespace-nowrap px-6 py-5 text-sm">
+                                <span class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold shadow-sm
+                                    {{ $log->action === 'created' ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-500/10' : 
+                                      ($log->action === 'updated' ? 'bg-amber-50 text-amber-600 ring-1 ring-amber-500/10' : 
+                                      ($log->action === 'deleted' ? 'bg-rose-50 text-rose-600 ring-1 ring-rose-500/10' : 'bg-slate-50 text-slate-600 ring-1 ring-slate-500/10')) }}">
                                     {{ strtoupper($log->action) }}
                                 </span>
                             </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
-                                <code class="bg-indigo-50 px-1.5 py-0.5 rounded text-xs text-indigo-600 font-mono border border-indigo-100">{{ $log->table_name }}</code>
+                            <td class="hidden sm:table-cell whitespace-nowrap px-6 py-5 text-sm">
+                                <div class="flex items-center">
+                                    <i class="bi bi-database mr-2 text-slate-300"></i>
+                                    <code class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">{{ $log->table_name }}</code>
+                                </div>
                             </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-400 font-mono text-xs">
+                            <td class="hidden md:table-cell whitespace-nowrap px-6 py-5 text-sm text-slate-400 font-mono text-xs">
                                 {{ $log->ip_address }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-sm text-slate-400 italic">
-                                <div class="flex flex-col items-center">
-                                    <i class="bi bi-journal-x text-2xl mb-2 text-slate-300"></i>
-                                    Belum ada log aktivitas.
+                            <td colspan="5" class="px-6 py-16 text-center text-slate-400 italic">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-3 shadow-inner">
+                                        <i class="bi bi-journal-x text-2xl text-slate-300"></i>
+                                    </div>
+                                    <span class="font-medium">Belum ada log aktivitas.</span>
                                 </div>
                             </td>
                         </tr>

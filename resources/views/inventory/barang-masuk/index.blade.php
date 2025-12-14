@@ -83,67 +83,69 @@
 <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg bg-white">
+            <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] overflow-hidden ring-1 ring-slate-100/50">
                 @if($barangMasuks->count() > 0)
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full">
+                        <thead class="bg-emerald-50/40 border-b border-emerald-100/50">
                             <tr>
-                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 w-16">No</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tanggal</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Barang</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Supplier</th>
-                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Jumlah</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dicatat Oleh</th>
-                                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Keterangan</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                                <th scope="col" class="py-4 pl-6 pr-3 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600 w-16">No</th>
+                                <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600">Tanggal</th>
+                                <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600">Barang</th>
+                                <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600">Supplier</th>
+                                <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold uppercase tracking-wider text-emerald-600">Jumlah</th>
+                                <th scope="col" class="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600">Dicatat Oleh</th>
+                                <th scope="col" class="hidden px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-emerald-600 lg:table-cell">Keterangan</th>
+                                <th scope="col" class="relative py-4 pl-3 pr-6 text-center text-[11px] font-bold uppercase tracking-wider text-emerald-600">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
+                        <tbody class="divide-y divide-slate-100 bg-white">
                             @foreach($barangMasuks as $item)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">{{ $barangMasuks->firstItem() + $loop->index }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                                        <div class="flex items-center">
-                                            <i class="bi bi-calendar3 mr-2 text-gray-400"></i>
-                                            {{ $item->tanggal->format('d/m/Y') }}
+                                <tr class="hover:bg-emerald-50/20 transition-colors duration-200 group">
+                                    <td class="whitespace-nowrap py-5 pl-6 pr-3 text-sm text-slate-400 font-medium">{{ $barangMasuks->firstItem() + $loop->index }}</td>
+                                    <td class="whitespace-nowrap px-6 py-5 text-sm">
+                                        <div class="flex items-center text-slate-600">
+                                            <i class="bi bi-calendar3 mr-2 text-slate-400 text-xs"></i>
+                                            <span class="font-medium">{{ $item->tanggal->format('d/m/Y') }}</span>
                                         </div>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                                        <div class="font-medium text-gray-900">{{ $item->barang->nama_barang }}</div>
-                                        <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $item->barang->kode_barang }}</div>
+                                    <td class="whitespace-nowrap px-6 py-5 text-sm">
+                                        <div class="font-bold text-slate-700 group-hover:text-emerald-700 transition-colors">{{ $item->barang->nama_barang }}</div>
+                                        <div class="text-[10px] text-slate-400 font-mono mt-0.5 uppercase tracking-wide bg-slate-50 inline-block px-1.5 rounded">{{ $item->barang->kode_barang }}</div>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <td class="whitespace-nowrap px-6 py-5 text-sm">
                                         <div class="flex items-center">
-                                            <i class="bi bi-shop mr-1.5 text-xs text-gray-400"></i>
-                                            {{ $item->supplier->nama_supplier }}
+                                            <div class="h-6 w-6 rounded-full bg-cyan-50 text-cyan-500 flex items-center justify-center mr-2">
+                                                <i class="bi bi-shop text-[10px]"></i>
+                                            </div>
+                                            <span class="text-slate-600">{{ $item->supplier->nama_supplier }}</span>
                                         </div>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-right">
-                                        <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                    <td class="whitespace-nowrap px-6 py-5 text-sm text-right">
+                                        <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-600 shadow-sm border border-emerald-100">
                                             +{{ number_format($item->jumlah) }}
                                         </span>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        <div class="font-medium text-gray-900">{{ $item->user->name }}</div>
-                                        <div class="text-xs text-gray-400">{{ $item->user->role->label() }}</div>
+                                    <td class="whitespace-nowrap px-6 py-5 text-sm">
+                                        <div class="font-medium text-slate-700">{{ $item->user->name }}</div>
+                                        <div class="text-xs text-slate-400">{{ $item->user->role->label() }}</div>
                                     </td>
-                                    <td class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell max-w-xs truncate">
+                                    <td class="hidden px-6 py-5 text-sm text-slate-500 lg:table-cell max-w-xs truncate italic">
                                         {{ $item->keterangan ?? '-' }}
                                     </td>
-                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6">
+                                    <td class="relative whitespace-nowrap py-5 pl-3 pr-6 text-center text-sm font-medium">
                                         <div class="flex justify-center gap-2">
-                                            <a href="{{ route('inventory.barang-masuk.show', $item) }}" class="text-indigo-600 hover:text-indigo-900 p-1 rounded-md hover:bg-indigo-50 transition-colors" title="Detail">
-                                                <i class="bi bi-eye"></i><span class="sr-only">Detail</span>
+                                            <a href="{{ route('inventory.barang-masuk.show', $item) }}" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all duration-200 shadow-sm" title="Detail">
+                                                <i class="bi bi-eye text-sm"></i>
                                             </a>
-                                            <a href="{{ route('inventory.barang-masuk.edit', $item) }}" class="text-amber-600 hover:text-amber-900 p-1 rounded-md hover:bg-amber-50 transition-colors" title="Edit">
-                                                <i class="bi bi-pencil"></i><span class="sr-only">Edit</span>
+                                            <a href="{{ route('inventory.barang-masuk.edit', $item) }}" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all duration-200 shadow-sm" title="Edit">
+                                                <i class="bi bi-pencil text-sm"></i>
                                             </a>
                                             @can('isAdmin')
                                                 <form action="{{ route('inventory.barang-masuk.destroy', $item) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin hapus? Stok akan dikurangi!')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors" title="Hapus">
-                                                        <i class="bi bi-trash"></i><span class="sr-only">Hapus</span>
+                                                    <button type="submit" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white transition-all duration-200 shadow-sm" title="Hapus">
+                                                        <i class="bi bi-trash text-sm"></i>
                                                     </button>
                                                 </form>
                                             @endcan
@@ -154,18 +156,20 @@
                         </tbody>
                     </table>
                     
-                    <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                    <div class="bg-white px-6 py-4 border-t border-slate-100">
                         {{ $barangMasuks->links() }}
                     </div>
                 @else
-                    <div class="text-center py-12">
-                        <i class="bi bi-box-arrow-in-down text-4xl text-gray-300 block mb-3"></i>
-                        <h3 class="mt-2 text-sm font-semibold text-gray-900">Belum ada transaksi masuk</h3>
-                        <p class="mt-1 text-sm text-gray-500">Catat penerimaan barang pertama Anda sekarang.</p>
-                        <div class="mt-6">
-                            <a href="{{ route('inventory.barang-masuk.create') }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
-                                <i class="bi bi-plus-circle mr-2"></i>
-                                Tambah Barang Masuk
+                    <div class="px-6 py-16 text-center">
+                        <div class="h-20 w-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <i class="bi bi-box-arrow-in-down text-4xl text-emerald-300"></i>
+                        </div>
+                        <h3 class="mt-2 text-lg font-bold text-slate-800">Belum ada transaksi masuk</h3>
+                        <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Catat penerimaan barang pertama Anda sekarang.</p>
+                        <div class="mt-8">
+                            <a href="{{ route('inventory.barang-masuk.create') }}" class="inline-flex items-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-500 hover:shadow-emerald-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                                <i class="bi bi-plus-circle mr-2 text-lg"></i>
+                                Catat Barang Masuk
                             </a>
                         </div>
                     </div>

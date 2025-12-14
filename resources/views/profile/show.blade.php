@@ -2,136 +2,147 @@
 
 @section('title', 'Profile Saya')
 @section('page-title', 'Profile Saya')
-@section('page-subtitle', 'Informasi akun Anda')
+@section('page-subtitle', 'Informasi akun pengguna Anda')
 
 @section('content')
-<div class="row">
-    <div class="col-lg-4">
-        <!-- User Info Card -->
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
-                    <i class="bi bi-person-fill fs-1"></i>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column: User Card -->
+    <div class="space-y-6">
+        <div class="rounded-3xl bg-white p-8 shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] text-center ring-1 ring-slate-100/50 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-500 to-purple-600"></div>
+            
+            <div class="relative z-10 -mt-4">
+                <div class="mx-auto h-24 w-24 rounded-full bg-white p-1.5 shadow-xl ring-2 ring-indigo-50">
+                    <div class="h-full w-full rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold uppercase">
+                        {{ substr($user->name, 0, 1) }}
+                    </div>
                 </div>
-                <h4 class="mb-1">{{ $user->name }}</h4>
-                <p class="text-muted mb-2">{{ '@' . $user->username }}</p>
-                <span class="badge bg-{{ $user->role->value === 'admin' ? 'danger' : ($user->role->value === 'gudang' ? 'primary' : 'info') }} mb-3">
-                    {{ $user->role->label() }}
-                </span>
                 
-                @if($user->is_active)
-                    <p class="mb-0"><span class="badge bg-success">Akun Aktif</span></p>
-                @else
-                    <p class="mb-0"><span class="badge bg-danger">Akun Nonaktif</span></p>
-                @endif
+                <h3 class="mt-4 text-xl font-bold text-slate-800">{{ $user->name }}</h3>
+                <p class="text-sm text-slate-500 font-medium">{{ '@' . $user->username }}</p>
+                
+                <div class="mt-4 flex flex-wrap justify-center gap-2">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset {{ $user->role->value === 'admin' ? 'bg-rose-50 text-rose-700 ring-rose-600/20' : ($user->role->value === 'gudang' ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/20' : 'bg-amber-50 text-amber-700 ring-amber-600/20') }}">
+                        {{ $user->role->label() }}
+                    </span>
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset {{ $user->is_active ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 'bg-slate-50 text-slate-700 ring-slate-600/20' }}">
+                        {{ $user->is_active ? 'Akun Aktif' : 'Nonaktif' }}
+                    </span>
+                </div>
+            </div>
 
-                <div class="d-grid gap-2 mt-4">
-                    <a href="{{ route('profile.edit') }}" class="btn btn-primary">
-                        <i class="bi bi-pencil me-1"></i> Edit Profile
-                    </a>
-                    <a href="{{ route('profile.password.edit') }}" class="btn btn-warning">
-                        <i class="bi bi-key me-1"></i> Ganti Password
-                    </a>
-                    <a href="{{ route('profile.settings') }}" class="btn btn-secondary">
-                        <i class="bi bi-gear me-1"></i> Pengaturan
-                    </a>
+            <div class="mt-8 grid grid-cols-2 gap-3">
+                <a href="{{ route('profile.edit') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all duration-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5">
+                    <i class="bi bi-pencil mr-2"></i> Edit
+                </a>
+                <a href="{{ route('profile.settings') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-200 transition-all duration-200">
+                    <i class="bi bi-gear mr-2"></i> Settings
+                </a>
+            </div>
+            <div class="mt-3">
+                 <a href="{{ route('profile.password.edit') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-700 hover:bg-amber-100 transition-all duration-200 border border-amber-100">
+                    <i class="bi bi-key mr-2"></i> Ganti Password
+                </a>
+            </div>
+        </div>
+        
+        <!-- Activity Summary Widget -->
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100/50">
+            <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center">
+                 <i class="bi bi-activity text-indigo-500 mr-2"></i> Ringkasan Aktivitas
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="rounded-2xl bg-emerald-50 p-4 text-center border border-emerald-100">
+                     <i class="bi bi-box-arrow-in-down text-2xl text-emerald-600 mb-1 block"></i>
+                     <span class="block text-2xl font-bold text-emerald-700">{{ $user->barangMasuk()->count() }}</span>
+                     <span class="text-[10px] font-bold uppercase text-emerald-600/70 tracking-wider">Barang Masuk</span>
+                </div>
+                <div class="rounded-2xl bg-rose-50 p-4 text-center border border-rose-100">
+                     <i class="bi bi-box-arrow-up text-2xl text-rose-600 mb-1 block"></i>
+                     <span class="block text-2xl font-bold text-rose-700">{{ $user->barangKeluar()->count() }}</span>
+                     <span class="text-[10px] font-bold uppercase text-rose-600/70 tracking-wider">Barang Keluar</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-8">
-        <!-- Profile Details -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informasi Detail</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <td width="30%" class="text-muted"><strong>Nama Lengkap</strong></td>
-                        <td>{{ $user->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Username</strong></td>
-                        <td><code>{{ $user->username }}</code></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Email</strong></td>
-                        <td>{{ $user->email ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Role</strong></td>
-                        <td>
-                            <span class="badge bg-{{ $user->role->value === 'admin' ? 'danger' : ($user->role->value === 'gudang' ? 'primary' : 'info') }}">
-                                {{ $user->role->label() }}
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Status Akun</strong></td>
-                        <td>
-                            @if($user->is_active)
-                                <span class="badge bg-success">Aktif</span>
-                            @else
-                                <span class="badge bg-danger">Nonaktif</span>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><hr></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Akun Dibuat</strong></td>
-                        <td>{{ $user->created_at->format('d F Y, H:i') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Terakhir Diupdate</strong></td>
-                        <td>{{ $user->updated_at->format('d F Y, H:i') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted"><strong>Last Login</strong></td>
-                        <td>
-                            @if($user->last_login_at)
-                                <div>
-                                    {{ $user->last_login_at->format('d F Y, H:i') }}
-                                    <small class="text-muted d-block">({{ $user->last_login_at->diffForHumans() }})</small>
-                                    @if($user->last_login_ip)
-                                        <small class="text-muted d-block">IP: {{ $user->last_login_ip }}</small>
-                                    @endif
-                                </div>
-                            @else
-                                <span class="text-muted">Belum pernah login</span>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
-            </div>
+    <!-- Right Column: Details -->
+    <div class="col-span-1 lg:col-span-2 space-y-6">
+        <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] ring-1 ring-slate-100/50 overflow-hidden">
+             <div class="border-b border-slate-100 px-8 py-5 flex items-center gap-3 bg-slate-50/50">
+                 <div class="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                     <i class="bi bi-person-lines-fill text-xl"></i>
+                 </div>
+                 <div>
+                     <h3 class="text-base font-bold text-slate-800">Detail Informasi</h3>
+                     <p class="text-xs text-slate-500">Data lengkap akun pengguna</p>
+                 </div>
+             </div>
+             
+             <div class="p-8">
+                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8">
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nama Lengkap</dt>
+                         <dd class="text-base font-medium text-slate-800">{{ $user->name }}</dd>
+                     </div>
+                     
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Username</dt>
+                         <dd class="text-base font-medium text-slate-800 flex items-center gap-2">
+                             {{ $user->username }}
+                             <i class="bi bi-check-circle-fill text-emerald-500 text-xs" title="Verified"></i>
+                         </dd>
+                     </div>
+                     
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email Address</dt>
+                         <dd class="text-base font-medium text-slate-800">{{ $user->email ?? '-' }}</dd>
+                     </div>
+                     
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Hak Akses / Role</dt>
+                         <dd class="mt-1">
+                             <span class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-700">
+                                 {{ $user->role->label() }}
+                             </span>
+                         </dd>
+                     </div>
+                     
+                     <div class="sm:col-span-2 border-t border-slate-100 pt-6 mt-2"></div>
+                     
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Bergabung Sejak</dt>
+                         <dd class="text-sm font-medium text-slate-600">{{ $user->created_at->format('d F Y') }}</dd>
+                     </div>
+                     
+                     <div class="sm:col-span-1">
+                         <dt class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Terakhir Login</dt>
+                         <dd class="text-sm font-medium text-slate-600">
+                             @if($user->last_login_at)
+                                 {{ $user->last_login_at->diffForHumans() }}
+                                 <span class="text-xs text-slate-400 block font-mono mt-0.5">{{ $user->last_login_at->format('d/m/Y H:i') }}</span>
+                             @else
+                                 Belum pernah login
+                             @endif
+                         </dd>
+                     </div>
+                 </dl>
+             </div>
         </div>
-
-        <!-- Activity Summary -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-activity me-2"></i>Aktivitas</h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-6 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="bi bi-box-arrow-in-down fs-1 text-success"></i>
-                            <h3 class="mt-2">{{ number_format($user->barangMasuk->count()) }}</h3>
-                            <p class="text-muted mb-0">Transaksi Barang Masuk</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="bi bi-box-arrow-up fs-1 text-danger"></i>
-                            <h3 class="mt-2">{{ number_format($user->barangKeluar->count()) }}</h3>
-                            <p class="text-muted mb-0">Transaksi Barang Keluar</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        
+        <div class="rounded-3xl bg-indigo-50 border border-indigo-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+             <div class="flex items-center gap-4">
+                 <div class="h-12 w-12 rounded-full bg-white flex items-center justify-center text-indigo-500 shadow-sm">
+                     <i class="bi bi-shield-lock-fill text-2xl"></i>
+                 </div>
+                 <div>
+                     <h4 class="font-bold text-indigo-900">Keamanan Akun</h4>
+                     <p class="text-sm text-indigo-700/80">Jaga keamanan akun Anda dengan mengganti password secara berkala.</p>
+                 </div>
+             </div>
+             <a href="{{ route('profile.password.edit') }}" class="whitespace-nowrap rounded-xl bg-white px-4 py-2 text-sm font-bold text-indigo-600 shadow-sm ring-1 ring-inset ring-indigo-200 hover:bg-indigo-50 transition-all">
+                 Review Keamanan
+             </a>
         </div>
     </div>
 </div>
