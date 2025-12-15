@@ -5,7 +5,21 @@
 @section('page-subtitle', 'Detail lengkap semua transaksi masuk dan keluar')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-8">
+<div class="max-w-6xl mx-auto space-y-8" x-data="{ 
+    selectedIds: [],
+    selectAll: false,
+    toggleAll() {
+        if (this.selectAll) {
+            this.selectedIds = [...document.querySelectorAll('input[name=\'transaction_ids[]\']')].map(cb => cb.value);
+        } else {
+            this.selectedIds = [];
+        }
+    },
+    updateSelectAll() {
+        const checkboxes = document.querySelectorAll('input[name=\'transaction_ids[]\']');
+        this.selectAll = checkboxes.length > 0 && this.selectedIds.length === checkboxes.length;
+    }
+}">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -46,13 +60,54 @@
         </div>
     </div>
 
+    <!-- Bulk Actions Bar (Only for Admin) -->
+    @can('isAdmin')
+        <div x-show="selectedIds.length > 0" 
+             x-transition
+             class="rounded-3xl bg-rose-600 text-white shadow-lg shadow-rose-200 p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="bi bi-check2-square text-2xl mr-3"></i>
+                <div>
+                    <h3 class="font-bold"><span x-text="selectedIds.length"></span> Transaksi Dipilih</h3>
+                    <p class="text-xs text-rose-100">Stok akan otomatis disesuaikan setelah penghapusan</p>
+                </div>
+            </div>
+            <form action="{{ route('inventory.barang.transactions.bulk-delete', $barang) }}" 
+                  method="POST" 
+                  onsubmit="return confirm('⚠️ PERHATIAN!\n\nApakah Anda yakin ingin menghapus ' + selectedIds.length + ' transaksi?\n\n✓ Stok akan disesuaikan otomatis\n✓ Semua aktivitas tercatat di audit log\n✗ Tindakan ini TIDAK BISA dibatalkan\n\nLanjutkan?')"
+                  class="flex items-center gap-3">
+                @csrf
+                <template x-for="id in selectedIds" :key="id">
+                    <input type="hidden" name="transaction_ids[]" x-bind:value="id">
+                </template>
+                <button type="button" 
+                        @click="selectedIds = []; selectAll = false"
+                        class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors text-sm font-bold">
+                    <i class="bi bi-x-circle mr-1"></i> Batal
+                </button>
+                <button type="submit" 
+                        class="px-6 py-2 rounded-lg bg-white text-rose-600 hover:bg-rose-50 transition-colors text-sm font-bold shadow-lg">
+                    <i class="bi bi-trash mr-1"></i> Hapus Transaksi Terpilih
+                </button>
+            </form>
+        </div>
+    @endcan
+
     <!-- Transactions Table -->
     <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] ring-1 ring-slate-100/50 overflow-hidden">
-        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-between items-center">
             <h3 class="text-base font-bold text-slate-900 flex items-center">
                 <i class="bi bi-clock-history mr-2 text-indigo-500"></i>
                 Riwayat Lengkap ({{ $transactions->count() }} Transaksi)
             </h3>
+            
+            @can('isAdmin')
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-500" x-show="selectedIds.length > 0">
+                        <span x-text="selectedIds.length"></span> dipilih
+                    </span>
+                </div>
+            @endcan
         </div>
 
         @if($transactions->isEmpty())
@@ -68,6 +123,14 @@
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs uppercase bg-slate-50 border-b border-slate-100">
                         <tr>
+                            @can('isAdmin')
+                                <th class="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">
+                                    <input type="checkbox" 
+                                           x-model="selectAll"
+                                           @change="toggleAll()"
+                                           class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                </th>
+                            @endcan
                             <th class="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">No</th>
                             <th class="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">Tanggal</th>
                             <th class="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">Jenis</th>
@@ -83,6 +146,16 @@
                     <tbody class="divide-y divide-slate-100">
                         @foreach($transactions as $index => $transaction)
                             <tr class="hover:bg-slate-50/50 transition-colors">
+                                @can('isAdmin')
+                                    <td class="px-6 py-4">
+                                        <input type="checkbox" 
+                                               name="transaction_ids[]" 
+                                               value="{{ $transaction['type'] }}-{{ $transaction['id'] }}"
+                                               x-model="selectedIds"
+                                               @change="updateSelectAll()"
+                                               class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    </td>
+                                @endcan
                                 <td class="px-6 py-4 text-slate-500 font-medium">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4 text-slate-700 whitespace-nowrap">
                                     <div class="font-medium">{{ $transaction['tanggal']->format('d/m/Y') }}</div>
@@ -138,5 +211,23 @@
             </div>
         @endif
     </div>
+
+    <!-- Info Panel -->
+    @can('isAdmin')
+        <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
+            <div class="flex items-start">
+                <i class="bi bi-info-circle-fill text-amber-500 text-xl mr-3 mt-0.5"></i>
+                <div class="text-sm text-amber-800">
+                    <h4 class="font-bold mb-1">Informasi Penghapusan Transaksi</h4>
+                    <ul class="list-disc list-inside space-y-1 text-xs">
+                        <li>Centang transaksi yang ingin dihapus, lalu klik tombol "Hapus Transaksi Terpilih"</li>
+                        <li>Stok barang akan <strong>otomatis disesuaikan</strong> (dikurangi untuk transaksi masuk, ditambah untuk transaksi keluar)</li>
+                        <li>Setiap penghapusan <strong>tercatat di audit log</strong> untuk integritas data</li>
+                        <li>Setelah semua transaksi dihapus, Anda bisa menghapus barang dari daftar barang</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endcan
 </div>
 @endsection

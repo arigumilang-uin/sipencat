@@ -204,4 +204,119 @@ class BarangController extends Controller
 
         return view('inventory.barang.transactions', compact('barang', 'transactions'));
     }
+
+    /**
+     * Bulk delete transactions for a specific barang
+     */
+    public function bulkDeleteTransactions(Request $request, Barang $barang): RedirectResponse
+    {
+        Gate::authorize('isAdmin'); // Only admin can delete transactions
+
+        $validated = $request->validate([
+            'transaction_ids' => ['required', 'array'],
+            'transaction_ids.*' => ['required', 'string'], // Format: "masuk-1" or "keluar-2"
+        ]);
+
+        $deletedCount = 0;
+        $errors = [];
+
+        foreach ($validated['transaction_ids'] as $transactionId) {
+            try {
+                [$type, $id] = explode('-', $transactionId);
+                
+                if ($type === 'masuk') {
+                    $transaction = \App\Models\BarangMasuk::findOrFail($id);
+                    
+                    // Verify this transaction belongs to the current barang
+                    if ($transaction->barang_id !== $barang->id) {
+                        throw new \Exception("Transaksi tidak sesuai dengan barang.");
+                    }
+
+                    // Reverse stock (subtract the amount that was added)
+                    $barang->stok -= $transaction->jumlah;
+                    
+                    if ($barang->stok < 0) {
+                        throw new \Exception("Penghapusan ini akan menyebabkan stok negatif. Hapus transaksi keluar terlebih dahulu.");
+                    }
+
+                    // Log to audit before deletion
+                    \App\Models\AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'deleted',
+                        'auditable_type' => \App\Models\BarangMasuk::class,
+                        'auditable_id' => $transaction->id,
+                        'old_values' => $transaction->toArray(),
+                        'new_values' => null,
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ]);
+
+                    $transaction->delete();
+                    
+                } elseif ($type === 'keluar') {
+                    $transaction = \App\Models\BarangKeluar::findOrFail($id);
+                    
+                    // Verify this transaction belongs to the current barang
+                    if ($transaction->barang_id !== $barang->id) {
+                        throw new \Exception("Transaksi tidak sesuai dengan barang.");
+                    }
+
+                    // Reverse stock (add back the amount that was removed)
+                    $barang->stok += $transaction->jumlah;
+
+                    // Log to audit before deletion
+                    \App\Models\AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'deleted',
+                        'auditable_type' => \App\Models\BarangKeluar::class,
+                        'auditable_id' => $transaction->id,
+                        'old_values' => $transaction->toArray(),
+                        'new_values' => null,
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ]);
+
+                    $transaction->delete();
+                    
+                } else {
+                    throw new \Exception("Tipe transaksi tidak valid.");
+                }
+
+                $deletedCount++;
+
+            } catch (\Exception $e) {
+                $errors[] = "Error deleting transaction {$transactionId}: " . $e->getMessage();
+            }
+        }
+
+        // Save the stock changes
+        $barang->save();
+
+        // Log the bulk deletion summary to audit
+        \App\Models\AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'bulk_delete_transactions',
+            'auditable_type' => Barang::class,
+            'auditable_id' => $barang->id,
+            'old_values' => [
+                'deleted_count' => $deletedCount,
+                'transaction_ids' => $validated['transaction_ids'],
+            ],
+            'new_values' => [
+                'new_stock' => $barang->stok,
+            ],
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
+        if (!empty($errors)) {
+            return redirect()
+                ->route('inventory.barang.transactions', $barang)
+                ->with('warning', "{$deletedCount} transaksi berhasil dihapus. Beberapa error: " . implode('; ', $errors));
+        }
+
+        return redirect()
+            ->route('inventory.barang.transactions', $barang)
+            ->with('success', "{$deletedCount} transaksi berhasil dihapus dan stok telah disesuaikan.");
+    }
 }

@@ -101,6 +101,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('barang', \App\Http\Controllers\Inventory\BarangController::class);
         Route::get('barang/{barang}/transactions', [\App\Http\Controllers\Inventory\BarangController::class, 'transactions'])
             ->name('barang.transactions');
+        Route::post('barang/{barang}/transactions/bulk-delete', [\App\Http\Controllers\Inventory\BarangController::class, 'bulkDeleteTransactions'])
+            ->name('barang.transactions.bulk-delete')
+            ->middleware('can:isAdmin');
 
         // Master Data - Supplier
         Route::resource('supplier', \App\Http\Controllers\Inventory\SupplierController::class);
