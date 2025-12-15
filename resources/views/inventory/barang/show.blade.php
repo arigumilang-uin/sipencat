@@ -89,6 +89,10 @@
             <div class="rounded-3xl bg-white shadow-sm ring-1 ring-slate-100 p-6">
                 <h3 class="text-sm font-bold text-slate-900 mb-4">Aksi Cepat</h3>
                 <div class="space-y-3">
+                    <a href="{{ route('inventory.barang.transactions', $barang) }}" class="flex items-center justify-center w-full rounded-xl bg-violet-50 px-4 py-3 text-sm font-bold text-violet-700 hover:bg-violet-100 transition-colors">
+                        <i class="bi bi-clock-history mr-2"></i> Lihat Riwayat Transaksi
+                    </a>
+
                     <a href="{{ route('inventory.barang.edit', $barang) }}" class="flex items-center justify-center w-full rounded-xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700 hover:bg-amber-100 transition-colors">
                         <i class="bi bi-pencil-square mr-2"></i> Edit Barang
                     </a>

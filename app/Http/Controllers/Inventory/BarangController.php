@@ -135,4 +135,73 @@ class BarangController extends Controller
             ->route('inventory.barang.index')
             ->with('success', 'Barang berhasil dihapus.');
     }
+
+    /**
+     * Display transaction history for a specific barang
+     */
+    public function transactions(Barang $barang): View
+    {
+        Gate::authorize('canManageInventory');
+
+        // Get all transactions (masuk & keluar) and merge them
+        $barangMasuk = $barang->barangMasuk()
+            ->with(['supplier', 'user'])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'masuk',
+                    'tanggal' => $item->tanggal,
+                    'jumlah' => $item->jumlah,
+                    'keterangan' => $item->keterangan,
+                    'partner' => $item->supplier->nama_supplier ?? '-',
+                    'partner_detail' => $item->supplier->telp ?? '-',
+                    'user' => $item->user->name ?? '-',
+                    'created_at' => $item->created_at,
+                    'model' => $item,
+                ];
+            });
+
+        $barangKeluar = $barang->barangKeluar()
+            ->with(['user'])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'keluar',
+                    'tanggal' => $item->tanggal,
+                    'jumlah' => $item->jumlah,
+                    'keterangan' => $item->keterangan ?? '-',
+                    'partner' => $item->tujuan,
+                    'partner_detail' => '-',
+                    'user' => $item->user->name ?? '-',
+                    'created_at' => $item->created_at,
+                    'model' => $item,
+                ];
+            });
+
+        // Merge and sort by date (descending)
+        $transactions = $barangMasuk->concat($barangKeluar)
+            ->sortByDesc('tanggal')
+            ->values();
+
+        // Calculate running stock balance
+        $currentStock = $barang->stok;
+        $transactions = $transactions->reverse()->map(function ($transaction, $index) use (&$currentStock) {
+            if ($transaction['type'] === 'masuk') {
+                $transaction['stock_before'] = $currentStock - $transaction['jumlah'];
+                $transaction['stock_after'] = $currentStock;
+            } else {
+                $transaction['stock_before'] = $currentStock + $transaction['jumlah'];
+                $transaction['stock_after'] = $currentStock;
+            }
+            
+            // Move backwards in time
+            $currentStock = $transaction['stock_before'];
+            
+            return $transaction;
+        })->reverse()->values();
+
+        return view('inventory.barang.transactions', compact('barang', 'transactions'));
+    }
 }

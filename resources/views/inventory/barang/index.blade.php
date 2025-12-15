@@ -70,6 +70,9 @@
                                             <a href="{{ route('inventory.barang.show', $barang) }}" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all duration-200 shadow-sm" title="Detail">
                                                 <i class="bi bi-eye text-sm"></i>
                                             </a>
+                                            <a href="{{ route('inventory.barang.transactions', $barang) }}" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-violet-50 text-violet-600 hover:bg-violet-600 hover:text-white transition-all duration-200 shadow-sm" title="Riwayat Transaksi">
+                                                <i class="bi bi-clock-history text-sm"></i>
+                                            </a>
                                             <a href="{{ route('inventory.barang.edit', $barang) }}" class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all duration-200 shadow-sm" title="Edit">
                                                 <i class="bi bi-pencil text-sm"></i>
                                             </a>

@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('inventory')->name('inventory.')->middleware('can:canManageInventory')->group(function () {
         // Master Data - Barang
         Route::resource('barang', \App\Http\Controllers\Inventory\BarangController::class);
+        Route::get('barang/{barang}/transactions', [\App\Http\Controllers\Inventory\BarangController::class, 'transactions'])
+            ->name('barang.transactions');
 
         // Master Data - Supplier
         Route::resource('supplier', \App\Http\Controllers\Inventory\SupplierController::class);
