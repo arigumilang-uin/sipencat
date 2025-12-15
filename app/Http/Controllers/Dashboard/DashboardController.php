@@ -92,15 +92,42 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Get statistics for pemilik (reports focus)
+        // Get statistics for pemilik (business owner focus)
         $stats = [
             'total_barang' => \App\Models\Barang::count(),
             'total_value' => \App\Models\Barang::sum(DB::raw('stok * harga')),
             'low_stock_items' => \App\Models\Barang::lowStock()->count(),
+            
+            // Monthly transaction counts and quantities
             'monthly_transactions' => [
-                'masuk' => \App\Models\BarangMasuk::whereMonth('tanggal', now()->month)->count(),
-                'keluar' => \App\Models\BarangKeluar::whereMonth('tanggal', now()->month)->count(),
+                'masuk' => \App\Models\BarangMasuk::whereMonth('tanggal', now()->month)
+                    ->whereYear('tanggal', now()->year)
+                    ->count(),
+                'keluar' => \App\Models\BarangKeluar::whereMonth('tanggal', now()->month)
+                    ->whereYear('tanggal', now()->year)
+                    ->count(),
             ],
+            
+            // Monthly quantity movements
+            'monthly_in_qty' => \App\Models\BarangMasuk::whereMonth('tanggal', now()->month)
+                ->whereYear('tanggal', now()->year)
+                ->sum('jumlah'),
+            'monthly_out_qty' => \App\Models\BarangKeluar::whereMonth('tanggal', now()->month)
+                ->whereYear('tanggal', now()->year)
+                ->sum('jumlah'),
+            
+            // Top 5 items by total value (stock * price)
+            'top_items' => \App\Models\Barang::select('*')
+                ->selectRaw('(stok * harga) as total_value')
+                ->orderByRaw('(stok * harga) DESC')
+                ->take(5)
+                ->get(),
+            
+            // Low stock items (for alert list)
+            'low_stock_list' => \App\Models\Barang::lowStock()
+                ->orderBy('stok', 'asc')
+                ->take(10)
+                ->get(),
         ];
 
         return view('dashboard.pemilik', compact('user', 'stats'));
