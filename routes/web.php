@@ -176,3 +176,12 @@ Route::middleware('auth')->group(function () {
     // =============================================
     Route::get('/my-shift', [\App\Http\Controllers\ShiftInfoController::class, 'index'])->name('shift.info');
 });
+
+// =============================================
+// ERROR PAGE TEST ROUTES (Development Only)
+// =============================================
+if (config('app.debug')) {
+    Route::get('/test-error/{code}', function ($code) {
+        abort($code);
+    })->name('test.error');
+}
