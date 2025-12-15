@@ -243,8 +243,7 @@ class BarangController extends Controller
                     \App\Models\AuditLog::create([
                         'user_id' => auth()->id(),
                         'action' => 'deleted',
-                        'auditable_type' => \App\Models\BarangMasuk::class,
-                        'auditable_id' => $transaction->id,
+                        'table_name' => 'barang_masuk',
                         'old_values' => $transaction->toArray(),
                         'new_values' => null,
                         'ip_address' => request()->ip(),
@@ -268,8 +267,7 @@ class BarangController extends Controller
                     \App\Models\AuditLog::create([
                         'user_id' => auth()->id(),
                         'action' => 'deleted',
-                        'auditable_type' => \App\Models\BarangKeluar::class,
-                        'auditable_id' => $transaction->id,
+                        'table_name' => 'barang_keluar',
                         'old_values' => $transaction->toArray(),
                         'new_values' => null,
                         'ip_address' => request()->ip(),
@@ -296,11 +294,14 @@ class BarangController extends Controller
         \App\Models\AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'bulk_delete_transactions',
-            'auditable_type' => Barang::class,
-            'auditable_id' => $barang->id,
+            'table_name' => 'barang',
             'old_values' => [
+                'barang_id' => $barang->id,
+                'barang_kode' => $barang->kode_barang,
+                'barang_nama' => $barang->nama_barang,
                 'deleted_count' => $deletedCount,
                 'transaction_ids' => $validated['transaction_ids'],
+                'old_stock' => $barang->getOriginal('stok'),
             ],
             'new_values' => [
                 'new_stock' => $barang->stok,
