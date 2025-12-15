@@ -2,167 +2,196 @@
 
 @section('title', 'Edit User')
 @section('page-title', 'Edit User')
-@section('page-subtitle', 'Perbarui data user')
+@section('page-subtitle', 'Perbarui informasi dan hak akses pengguna')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>
-                        Form Edit User
-                    </h5>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        Kembali
+<div class="max-w-3xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-slate-900">Edit User: {{ $user->username }}</h1>
+        <a href="{{ route('admin.users.index') }}" class="group inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <i class="bi bi-arrow-left mr-2 transition-transform duration-200 group-hover:-translate-x-1"></i>
+            Kembali
+        </a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] ring-1 ring-slate-100/50 p-6 sm:p-8">
+        <form action="{{ route('admin.users.update', $user) }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="space-y-8">
+                <!-- User Identity Section -->
+                <div>
+                    <h3 class="text-base font-bold text-indigo-900 border-b border-indigo-100 pb-3 mb-6 flex items-center">
+                        <i class="bi bi-person-badge mr-2 text-indigo-500"></i>
+                        Identitas Pengguna
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Nama -->
+                        <div class="sm:col-span-2">
+                            <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Nama Lengkap <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="name" 
+                                   id="name" 
+                                   value="{{ old('name', $user->name) }}"
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('name') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                                   placeholder="Contoh: Budi Santoso" 
+                                   required>
+                            @error('name')
+                                <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Username -->
+                        <div class="sm:col-span-2">
+                            <label for="username" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Username <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="bi bi-at text-slate-400"></i>
+                                </div>
+                                <input type="text" 
+                                       name="username" 
+                                       id="username" 
+                                       value="{{ old('username', $user->username) }}"
+                                       class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('username') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                                       placeholder="username_unik" 
+                                       required>
+                            </div>
+                            @error('username')
+                                <p class="mt-1 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div>
+                    <h3 class="text-base font-bold text-indigo-900 border-b border-indigo-100 pb-3 mb-6 flex items-center">
+                        <i class="bi bi-shield-lock mr-2 text-indigo-500"></i>
+                        Keamanan & Akses
+                    </h3>
+
+                    <div class="mb-6 rounded-xl bg-blue-50 border border-blue-100 p-4">
+                        <div class="flex gap-3">
+                            <i class="bi bi-info-circle-fill text-blue-500 text-lg"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-blue-900">Ubah Password</h4>
+                                <p class="text-xs text-blue-700 mt-1">Kosongkan kolom password jika Anda tidak ingin mengubah password user ini.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Password Baru
+                            </label>
+                            <div class="relative" x-data="{ show: false }">
+                                <input :type="show ? 'text' : 'password'" 
+                                       name="password" 
+                                       id="password" 
+                                       class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('password') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                                       placeholder="••••••••">
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-500 focus:outline-none">
+                                    <i class="bi" :class="show ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+                                </button>
+                            </div>
+                            <p class="mt-2 text-xs text-slate-500">Minimal 6 karakter.</p>
+                            @error('password')
+                                <p class="mt-1 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Konfirmasi Password
+                            </label>
+                            <input type="password" 
+                                   name="password_confirmation" 
+                                   id="password_confirmation" 
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                                   placeholder="••••••••">
+                        </div>
+
+                        <!-- Role -->
+                        <div class="sm:col-span-2">
+                            <label for="role" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Role Pengguna <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                @foreach($roles as $role)
+                                    <label class="relative flex cursor-pointer rounded-xl border bg-white p-4 shadow-sm focus:outline-none ring-1 ring-transparent hover:ring-indigo-200 transition-all duration-200 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:checked]:ring-indigo-500 @error('role') border-rose-300 bg-rose-50 @enderror">
+                                        <input type="radio" name="role" value="{{ $role->value }}" class="sr-only" {{ old('role', $user->role->value) === $role->value ? 'checked' : '' }} required>
+                                        <div class="flex flex-col w-full text-center">
+                                            <span class="font-bold text-sm text-slate-900">{{ $role->label() }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                            @error('role')
+                                <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Status Switch -->
+                        <div class="sm:col-span-2">
+                            <div class="flex items-center justify-between rounded-xl bg-slate-50 p-4 border border-slate-200">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-slate-900">Status Aktif</span>
+                                    <span class="text-xs text-slate-500">{{ $user->is_active ? 'User saat ini dapat login ke sistem' : 'User saat ini TIDAK BISA login ke sistem' }}</span>
+                                </div>
+                                <div x-data="{ active: {{ old('is_active', $user->is_active) ? 'true' : 'false' }} }">
+                                    <input type="hidden" name="is_active" :value="active ? 1 : 0">
+                                    <button type="button" 
+                                            @click="active = !active" 
+                                            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" 
+                                            :class="active ? 'bg-indigo-600' : 'bg-slate-200'" 
+                                            role="switch" 
+                                            :aria-checked="active">
+                                        <span aria-hidden="true" 
+                                              class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" 
+                                              :class="active ? 'translate-x-5' : 'translate-x-0'"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-end">
+                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+                        Batal
                     </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-amber-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200 transition-all duration-200 hover:bg-amber-600 hover:shadow-amber-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 w-full sm:w-auto">
+                        <i class="bi bi-save mr-2"></i>
+                        Simpan Perubahan
+                    </button>
                 </div>
             </div>
-            <div class="card-body">
-                <form action="{{ route('admin.users.update', $user) }}" method="POST">
-                    @csrf
-                    @method('PUT')
+        </form>
+    </div>
 
-                    <!-- Nama -->
-                    <div class="mb-3">
-                        <label for="name" class="form-label fw-bold">
-                            Nama Lengkap <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" 
-                               class="form-control @error('name') is-invalid @enderror" 
-                               id="name" 
-                               name="name" 
-                               value="{{ old('name', $user->name) }}"
-                               placeholder="Masukkan nama lengkap"
-                               required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Username -->
-                    <div class="mb-3">
-                        <label for="username" class="form-label fw-bold">
-                            Username <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" 
-                               class="form-control @error('username') is-invalid @enderror" 
-                               id="username" 
-                               name="username" 
-                               value="{{ old('username', $user->username) }}"
-                               placeholder="Masukkan username (unik)"
-                               required>
-                        @error('username')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="text-muted">Username harus unik dan akan digunakan untuk login</small>
-                    </div>
-
-                    <!-- Password (Optional) -->
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Password:</strong> Kosongkan jika tidak ingin mengubah password
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="password" class="form-label fw-bold">
-                                    Password Baru
-                                </label>
-                                <input type="password" 
-                                       class="form-control @error('password') is-invalid @enderror" 
-                                       id="password" 
-                                       name="password"
-                                       placeholder="Minimal 6 karakter">
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="password_confirmation" class="form-label fw-bold">
-                                    Konfirmasi Password
-                                </label>
-                                <input type="password" 
-                                       class="form-control" 
-                                       id="password_confirmation" 
-                                       name="password_confirmation"
-                                       placeholder="Ulangi password baru">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Role -->
-                    <div class="mb-3">
-                        <label for="role" class="form-label fw-bold">
-                            Role <span class="text-danger">*</span>
-                        </label>
-                        <select class="form-select @error('role') is-invalid @enderror" 
-                                id="role" 
-                                name="role" 
-                                required>
-                            <option value="">-- Pilih Role --</option>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->value }}" 
-                                        {{ old('role', $user->role->value) === $role->value ? 'selected' : '' }}>
-                                    {{ $role->label() }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('role')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">
-                            Status <span class="text-danger">*</span>
-                        </label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   role="switch" 
-                                   id="is_active" 
-                                   name="is_active" 
-                                   value="1"
-                                   {{ old('is_active', $user->is_active) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_active">
-                                User Aktif
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Submit Buttons -->
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-save me-1"></i>
-                            Update User
-                        </button>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle me-1"></i>
-                            Batal
-                        </a>
-                    </div>
-                </form>
+    <!-- Warning Card -->
+    <div class="rounded-2xl border border-amber-100 bg-amber-50/50 p-5">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+                <i class="bi bi-exclamation-triangle-fill text-xl text-amber-500"></i>
             </div>
-        </div>
-
-        <!-- Info Card -->
-        <div class="card mt-3 border-warning">
-            <div class="card-body">
-                <h6 class="card-title">
-                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>
-                    Perhatian
-                </h6>
-                <ul class="mb-0 small">
-                    <li>Perubahan role akan mengubah hak akses user di sistem</li>
-                    <li>Menonaktifkan user akan membuat user tidak bisa login</li>
-                    <li>Password hanya akan diubah jika Anda mengisi field password baru</li>
+            <div>
+                <h4 class="text-sm font-bold text-amber-900 mb-1">Perhatian Perubahan User</h4>
+                <ul class="text-sm text-amber-700 space-y-1 list-disc list-inside marker:text-amber-400">
+                    <li>Mengubah <strong>Role</strong> akan langsung mengubah hak akses dan menu yang tersedia bagi user tersebut.</li>
+                    <li>Menonaktifkan user akan memutus sesi login aktif dan mencegah login baru.</li>
                 </ul>
             </div>
         </div>

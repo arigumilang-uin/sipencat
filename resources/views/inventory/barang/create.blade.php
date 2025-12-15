@@ -2,128 +2,155 @@
 
 @section('title', 'Tambah Barang')
 @section('page-title', 'Tambah Barang')
-@section('page-subtitle', 'Tambah data barang baru')
+@section('page-subtitle', 'Daftarkan item barang baru ke dalam inventaris')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-box-seam me-2"></i>
-                        Form Tambah Barang
-                    </h5>
-                    <a href="{{ route('inventory.barang.index') }}" class="btn btn-sm btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        Kembali
-                    </a>
-                </div>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('inventory.barang.store') }}" method="POST">
-                    @csrf
+<div class="max-w-3xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-slate-900">Form Barang Baru</h1>
+        <a href="{{ route('inventory.barang.index') }}" class="group inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <i class="bi bi-arrow-left mr-2 transition-transform duration-200 group-hover:-translate-x-1"></i>
+            Kembali
+        </a>
+    </div>
 
-                    <div class="mb-3">
-                        <label for="kode_barang" class="form-label fw-bold">
-                            Kode Barang <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" 
-                               class="form-control @error('kode_barang') is-invalid @enderror" 
-                               id="kode_barang" 
-                               name="kode_barang" 
-                               value="{{ old('kode_barang') }}"
-                               placeholder="BRG001"
-                               required>
-                        @error('kode_barang')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="nama_barang" class="form-label fw-bold">
-                            Nama Barang <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" 
-                               class="form-control @error('nama_barang') is-invalid @enderror" 
-                               id="nama_barang" 
-                               name="nama_barang" 
-                               value="{{ old('nama_barang') }}"
-                               placeholder="Nama barang"
-                               required>
-                        @error('nama_barang')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="stok" class="form-label fw-bold">
-                                    Stok Awal <span class="text-danger">*</span>
-                                </label>
-                                <input type="number" 
-                                       class="form-control @error('stok') is-invalid @enderror" 
-                                       id="stok" 
-                                       name="stok" 
-                                       value="{{ old('stok', 0) }}"
-                                       min="0"
-                                       required>
-                                @error('stok')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+    <!-- Main Card -->
+    <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] ring-1 ring-slate-100/50 p-6 sm:p-8">
+        <form action="{{ route('inventory.barang.store') }}" method="POST">
+            @csrf
+            
+            <div class="space-y-8">
+                <!-- Data Barang Section -->
+                <div>
+                    <h3 class="text-base font-bold text-indigo-900 border-b border-indigo-100 pb-3 mb-6 flex items-center">
+                        <i class="bi bi-box-seam mr-2 text-indigo-500"></i>
+                        Informasi Barang
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Kode Barang -->
+                        <div class="sm:col-span-2">
+                            <label for="kode_barang" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Kode Barang <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="kode_barang" 
+                                   id="kode_barang" 
+                                   value="{{ old('kode_barang') }}"
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('kode_barang') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                                   placeholder="Contoh: BRG-001" 
+                                   required>
+                            @error('kode_barang')
+                                <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="harga" class="form-label fw-bold">
-                                    Harga <span class="text-danger">*</span>
-                                </label>
+
+                        <!-- Nama Barang -->
+                        <div class="sm:col-span-2">
+                            <label for="nama_barang" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Nama Barang <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="bi bi-tag text-slate-400"></i>
+                                </div>
+                                <input type="text" 
+                                       name="nama_barang" 
+                                       id="nama_barang" 
+                                       value="{{ old('nama_barang') }}"
+                                       class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('nama_barang') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                                       placeholder="Contoh: Laptop Acer Nitro 5" 
+                                       required>
+                            </div>
+                            @error('nama_barang')
+                                <p class="mt-1 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Kategori (Optional) -->
+                        <div class="sm:col-span-2">
+                            <label for="kategori" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Kategori
+                            </label>
+                            <input type="text" 
+                                   name="kategori" 
+                                   id="kategori" 
+                                   value="{{ old('kategori') }}"
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                                   placeholder="Elektronik, Furniture, dll">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stok & Harga Section -->
+                <div>
+                    <h3 class="text-base font-bold text-indigo-900 border-b border-indigo-100 pb-3 mb-6 flex items-center">
+                        <i class="bi bi-sliders mr-2 text-indigo-500"></i>
+                        Stok & Harga
+                    </h3>
+
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                        <!-- Stok Awal -->
+                        <div>
+                            <label for="stok" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Stok Awal <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" 
+                                   name="stok" 
+                                   id="stok" 
+                                   value="{{ old('stok', 0) }}"
+                                   min="0"
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                                   required>
+                        </div>
+
+                        <!-- Harga Satuan -->
+                        <div>
+                            <label for="harga" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Harga Satuan <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-sm font-bold">Rp</span>
                                 <input type="number" 
-                                       class="form-control @error('harga') is-invalid @enderror" 
-                                       id="harga" 
                                        name="harga" 
+                                       id="harga" 
                                        value="{{ old('harga', 0) }}"
                                        min="0"
-                                       step="0.01"
+                                       class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
                                        required>
-                                @error('harga')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="min_stok" class="form-label fw-bold">
-                                    Min. Stok <span class="text-danger">*</span>
-                                </label>
-                                <input type="number" 
-                                       class="form-control @error('min_stok') is-invalid @enderror" 
-                                       id="min_stok" 
-                                       name="min_stok" 
-                                       value="{{ old('min_stok', 10) }}"
-                                       min="0"
-                                       required>
-                                @error('min_stok')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-1"></i>
-                            Simpan Barang
-                        </button>
-                        <a href="{{ route('inventory.barang.index') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle me-1"></i>
-                            Batal
-                        </a>
+                        <!-- Minimum Stok -->
+                        <div>
+                            <label for="min_stok" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                Minimum Stok <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" 
+                                   name="min_stok" 
+                                   id="min_stok" 
+                                   value="{{ old('min_stok', 10) }}"
+                                   min="0"
+                                   class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                                   required>
+                            <p class="mt-1 text-[10px] text-slate-500">Peringatan akan muncul jika stok di bawah ini.</p>
+                        </div>
                     </div>
-                </form>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-end">
+                    <a href="{{ route('inventory.barang.index') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+                        Batal
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all duration-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+                        <i class="bi bi-save mr-2"></i>
+                        Simpan Barang
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection

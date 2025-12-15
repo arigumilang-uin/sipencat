@@ -2,37 +2,97 @@
 
 @section('title', 'Tambah Supplier')
 @section('page-title', 'Tambah Supplier')
+@section('page-subtitle', 'Registrasi supplier baru')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="bi bi-shop"></i> Form Tambah Supplier</h5>
+<div class="max-w-xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-slate-900">Form Supplier Baru</h1>
+        <a href="{{ route('inventory.supplier.index') }}" class="group inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <i class="bi bi-arrow-left mr-2 transition-transform duration-200 group-hover:-translate-x-1"></i>
+            Kembali
+        </a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="rounded-3xl bg-white shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] ring-1 ring-slate-100/50 p-6 sm:p-8">
+        <form action="{{ route('inventory.supplier.store') }}" method="POST">
+            @csrf
+            
+            <div class="space-y-6">
+                <!-- Nama Supplier -->
+                <div>
+                    <label for="nama_supplier" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                        Nama Supplier <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="bi bi-building text-slate-400"></i>
+                        </div>
+                        <input type="text" 
+                               name="nama_supplier" 
+                               id="nama_supplier" 
+                               value="{{ old('nama_supplier') }}"
+                               class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('nama_supplier') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                               placeholder="Contoh: PT. Sumber Makmur" 
+                               required>
+                    </div>
+                    @error('nama_supplier')
+                        <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Telepon -->
+                <div>
+                    <label for="telp" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                        Telepon / Kontak <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="bi bi-telephone text-slate-400"></i>
+                        </div>
+                        <input type="text" 
+                               name="telp" 
+                               id="telp" 
+                               value="{{ old('telp') }}"
+                               class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('telp') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                               placeholder="Contoh: 0812-3456-7890" 
+                               required>
+                    </div>
+                    @error('telp')
+                        <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Alamat -->
+                <div>
+                    <label for="alamat" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                        Alamat Lengkap <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea name="alamat" 
+                              id="alamat" 
+                              rows="4" 
+                              class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('alamat') border-rose-300 bg-rose-50 text-rose-900 @enderror"
+                              placeholder="Alamat kantor atau gudang supplier" 
+                              required>{{ old('alamat') }}</textarea>
+                    @error('alamat')
+                        <p class="mt-2 text-xs text-rose-500 flex items-center"><i class="bi bi-exclamation-circle-fill mr-1"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3 justify-end">
+                    <a href="{{ route('inventory.supplier.index') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+                        Batal
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all duration-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+                        <i class="bi bi-save mr-2"></i>
+                        Simpan Supplier
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <form action="{{ route('inventory.supplier.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Supplier *</label>
-                        <input type="text" name="nama_supplier" class="form-control @error('nama_supplier') is-invalid @enderror" value="{{ old('nama_supplier') }}" required>
-                        @error('nama_supplier')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Telepon *</label>
-                        <input type="text" name="telp" class="form-control @error('telp') is-invalid @enderror" value="{{ old('telp') }}" required>
-                        @error('telp')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Alamat *</label>
-                        <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="3" required>{{ old('alamat') }}</textarea>
-                        @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan</button>
-                    <a href="{{ route('inventory.supplier.index') }}" class="btn btn-secondary">Batal</a>
-                </form>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection

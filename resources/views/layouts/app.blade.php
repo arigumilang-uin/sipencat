@@ -124,17 +124,9 @@
                     </div>
                 @endif
                 
-                <!-- Page Title Section (User Only) -->
-                @auth
-                    @hasSection('page-title')
-                        <div class="mb-8 animate-enter">
-                            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">@yield('page-title')</h1>
-                            @hasSection('page-subtitle')
-                                <p class="mt-2 text-lg text-slate-500 font-medium">@yield('page-subtitle')</p>
-                            @endif
-                        </div>
-                    @endif
-                @endauth
+                
+                <!-- Page Title Section removed to prevent duplication with Navbar -->
+
 
                 @yield('content')
                 
