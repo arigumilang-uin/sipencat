@@ -117,15 +117,18 @@ class WorkingHour extends Model
                 // Shift rule exists, use it
                 return $shiftWorkingHour->isWithinWorkingHours();
             }
-            // No shift rule for this day, check role-based as fallback
+            
+            // No shift rule for this day = DENY ACCESS (default deny for staff)
+            return false;
         }
 
         // PRIORITY 3: Fallback to role-based working hours
         $roleWorkingHour = static::getForRoleAndDay($role, $dayOfWeek);
         
-        // If no working hours defined, allow access (default open)
+        // If no working hours defined for staff_operasional, DENY access (default deny)
+        // This ensures staff can only login during explicitly defined working hours
         if (!$roleWorkingHour) {
-            return true;
+            return false;
         }
         
         return $roleWorkingHour->isWithinWorkingHours();

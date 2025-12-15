@@ -22,6 +22,9 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'last_login_at',
+        'last_login_ip',
+        'last_seen_at',
     ];
 
     /**
@@ -44,6 +47,7 @@ class User extends Authenticatable
         'role' => UserRole::class,
         'is_active' => 'boolean',
         'last_login_at' => 'datetime',
+        'last_seen_at' => 'datetime',
     ];
 
     /**

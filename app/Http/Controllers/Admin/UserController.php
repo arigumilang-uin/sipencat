@@ -29,7 +29,9 @@ class UserController extends Controller
     {
         Gate::authorize('canManageUsers');
 
-        $users = User::latest()->paginate(15);
+        $users = User::select('id', 'name', 'username', 'role', 'is_active', 'last_login_at', 'last_login_ip', 'last_seen_at', 'created_at', 'updated_at')
+            ->latest()
+            ->paginate(15);
 
         return view('admin.users.index', compact('users'));
     }

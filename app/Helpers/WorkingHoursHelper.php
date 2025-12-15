@@ -77,9 +77,12 @@ if (!function_exists('getUserWorkingHoursToday')) {
             ];
         }
         
+        // No working hours defined = Staff cannot access (blocked)
         return [
-            'has_restriction' => false,
-            'message' => 'Tidak ada pembatasan jam kerja hari ini',
+            'has_restriction' => true,
+            'type' => 'blocked',
+            'message' => 'Tidak ada jadwal jam kerja untuk hari ini. Akses ditolak.',
+            'is_active_now' => false,
         ];
     }
 }

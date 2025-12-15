@@ -90,6 +90,26 @@ class WorkingHourController extends Controller
     }
 
     /**
+     * Update working hour
+     */
+    public function update(Request $request, WorkingHour $workingHour): RedirectResponse
+    {
+        Gate::authorize('canManageUsers');
+
+        $validated = $request->validate([
+            'day_of_week' => ['required', 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        ], [
+            'end_time.after' => 'Jam selesai harus setelah jam mulai.',
+        ]);
+
+        $workingHour->update($validated);
+
+        return back()->with('success', 'Jam kerja berhasil diperbarui.');
+    }
+
+    /**
      * Delete working hour
      */
     public function destroy(WorkingHour $workingHour): RedirectResponse

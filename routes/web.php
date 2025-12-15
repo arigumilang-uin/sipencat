@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
         // Working Hours Management
         Route::get('working-hours', [\App\Http\Controllers\Admin\WorkingHourController::class, 'index'])->name('working-hours.index');
         Route::post('working-hours', [\App\Http\Controllers\Admin\WorkingHourController::class, 'store'])->name('working-hours.store');
+        Route::put('working-hours/{workingHour}', [\App\Http\Controllers\Admin\WorkingHourController::class, 'update'])->name('working-hours.update');
         Route::delete('working-hours/{workingHour}', [\App\Http\Controllers\Admin\WorkingHourController::class, 'destroy'])->name('working-hours.destroy');
         Route::post('working-hours/{workingHour}/toggle', [\App\Http\Controllers\Admin\WorkingHourController::class, 'toggle'])->name('working-hours.toggle');
 

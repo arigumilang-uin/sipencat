@@ -11,8 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Track user activity for online status
         // Check working hours untuk web requests (after session started)
         $middleware->web(append: [
+            \App\Http\Middleware\TrackUserActivity::class,
             \App\Http\Middleware\CheckWorkingHours::class,
         ]);
     })

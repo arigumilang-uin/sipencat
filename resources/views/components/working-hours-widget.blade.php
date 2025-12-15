@@ -2,7 +2,35 @@
     $workingHours = getUserWorkingHoursToday();
 @endphp
 
-@if($workingHours && $workingHours['has_restriction'])
+@if($workingHours && $workingHours['has_restriction'] && isset($workingHours['type']) && $workingHours['type'] === 'blocked')
+    {{-- Blocked State: No working hours defined --}}
+    <div class="rounded-lg bg-white shadow-sm border border-rose-200 overflow-hidden">
+        <div class="border-b border-rose-200 px-4 py-4 bg-rose-600 text-white">
+            <h5 class="flex items-center text-base font-semibold">
+                <i class="bi bi-slash-circle mr-2"></i>
+                Status Jam Kerja
+            </h5>
+        </div>
+        <div class="p-5">
+            <div class="rounded-md bg-rose-50 p-4 border border-rose-100">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-exclamation-triangle-fill text-rose-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-rose-800">{{ $workingHours['message'] }}</h3>
+                        <div class="mt-2 text-sm text-rose-700">
+                            <p>
+                                Hubungi Administrator untuk mengatur jadwal jam kerja Anda. 
+                                Anda tidak dapat mengakses sistem tanpa jadwal yang ditentukan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@elseif($workingHours && $workingHours['has_restriction'])
     <div class="rounded-lg bg-white shadow-sm border border-gray-100 overflow-hidden">
         <div class="border-b border-gray-200 px-4 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
             <h5 class="flex items-center text-base font-semibold">

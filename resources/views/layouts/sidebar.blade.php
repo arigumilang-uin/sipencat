@@ -83,11 +83,11 @@
         </div>
         @endcan
 
-        @can('canManageInventory')
-        <!-- Operation Group -->
-        <div class="animate-enter delay-200">
+        <!-- Operation Group - For Staff Operasional -->
+        @can('isStaffOperasional')
+        <div class="animate-enter delay-150">
             <div class="mb-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500/80">
-                Operasional
+                Info Saya
             </div>
             <div class="space-y-1">
                 <a href="{{ route('shift.info') }}" 
@@ -95,6 +95,17 @@
                     <i class="bi bi-person-badge-fill w-5 h-5 mr-3 text-lg"></i>
                     Shift Saya
                 </a>
+            </div>
+        </div>
+        @endcan
+
+        @can('canManageInventory')
+        <!-- Inventory/Operation Group -->
+        <div class="animate-enter delay-200">
+            <div class="mb-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500/80">
+                Operasional
+            </div>
+            <div class="space-y-1">
             
                 <a href="{{ route('inventory.barang.index') }}" 
                    class="{{ request()->routeIs('inventory.barang*') ? 'bg-indigo-500/10 text-indigo-400 shadow-sm ring-1 ring-indigo-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' }} group flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200">

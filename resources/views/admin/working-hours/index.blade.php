@@ -5,7 +5,7 @@
 @section('page-subtitle', 'Atur jam kerja untuk shift staff operasional')
 
 @section('content')
-<div class="space-y-8">
+<div x-data="{ editModalOpen: false, editingHour: null }" class="space-y-8">
     <!-- Header & Info -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -160,6 +160,22 @@
                                         </td>
                                         <td class="px-6 py-4 text-right">
                                             <div class="flex justify-end gap-2">
+                                                <!-- Edit Button -->
+                                                <button @click="editModalOpen = true; editingHour = {{ json_encode([
+                                                    'id' => $wh->id,
+                                                    'day_of_week' => $wh->day_of_week,
+                                                    'day_name' => $wh->day_name,
+                                                    'start_time' => \Carbon\Carbon::parse($wh->start_time)->format('H:i'),
+                                                    'end_time' => \Carbon\Carbon::parse($wh->end_time)->format('H:i'),
+                                                    'shift_name' => $shift->name
+                                                ]) }}" 
+                                                type="button" 
+                                                class="group/btn flex items-center justify-center h-8 w-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-500 hover:text-white transition-all duration-200 shadow-sm" 
+                                                title="Edit">
+                                                    <i class="bi bi-pencil text-sm"></i>
+                                                </button>
+
+                                                <!-- Toggle Status -->
                                                 <form action="{{ route('admin.working-hours.toggle', $wh) }}" method="POST" class="inline-block">
                                                     @csrf
                                                     <button type="submit" class="group/btn flex items-center justify-center h-8 w-8 rounded-full {{ $wh->is_active ? 'bg-amber-50 text-amber-600 hover:bg-amber-500' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-500' }} hover:text-white transition-all duration-200 shadow-sm" title="{{ $wh->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
@@ -167,6 +183,7 @@
                                                     </button>
                                                 </form>
 
+                                                <!-- Delete -->
                                                 <form action="{{ route('admin.working-hours.destroy', $wh) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
                                                     @csrf
                                                     @method('DELETE')
@@ -193,5 +210,91 @@
             <p class="text-slate-500 mt-2 max-w-sm mx-auto">Tambahkan jadwal jam kerja berdasarkan shift menggunakan formulir di atas.</p>
         </div>
     @endif
+
+    <!-- Edit Modal (Alpine.js) -->
+    <div x-show="editModalOpen" 
+         style="display: none;" 
+         class="relative z-[100]" 
+         aria-labelledby="modal-title" 
+         role="dialog" 
+         aria-modal="true">
+        
+        <!-- Backdrop -->
+        <div x-show="editModalOpen" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+        
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <!-- Panel -->
+                <div x-show="editModalOpen"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     @click.outside="editModalOpen = false"
+                     class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                    
+                    <!-- Header -->
+                    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                        <h3 class="text-white font-bold flex items-center gap-2 text-lg">
+                            <i class="bi bi-pencil-square"></i> Edit Jadwal Kerja
+                        </h3>
+                        <button @click="editModalOpen = false" type="button" class="text-indigo-100 hover:text-white transition-colors">
+                            <i class="bi bi-x-lg text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <form :action="editingHour ? '{{ url('admin/working-hours') }}/' + editingHour.id : ''" method="POST" x-show="editingHour">
+                        @csrf
+                        @method('PUT')
+                        <div class="p-6 bg-white space-y-4">
+                            <div class="rounded-xl bg-indigo-50 border border-indigo-100 p-3 text-sm text-indigo-700">
+                                <strong x-text="editingHour ? editingHour.shift_name : ''"></strong>
+                            </div>
+
+                            <!-- Day -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Hari <span class="text-rose-500">*</span></label>
+                                <select name="day_of_week" x-model="editingHour.day_of_week" class="block w-full rounded-xl border-slate-200 py-2.5 px-3 text-sm focus:border-indigo-500 focus:ring-indigo-200 transition-all" required>
+                                    @foreach($days as $dayValue => $dayName)
+                                        <option value="{{ $dayValue }}">{{ $dayName }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Start Time -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Jam Mulai <span class="text-rose-500">*</span></label>
+                                <input type="time" name="start_time" x-model="editingHour ? editingHour.start_time : ''" class="block w-full rounded-xl border-slate-200 py-2.5 px-3 text-sm focus:border-indigo-500 focus:ring-indigo-200 transition-all" required>
+                            </div>
+
+                            <!-- End Time -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Jam Selesai <span class="text-rose-500">*</span></label>
+                                <input type="time" name="end_time" x-model="editingHour ? editingHour.end_time : ''" class="block w-full rounded-xl border-slate-200 py-2.5 px-3 text-sm focus:border-indigo-500 focus:ring-indigo-200 transition-all" required>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 px-6 py-4 flex flex-row-reverse gap-3 border-t border-slate-100">
+                            <button type="submit" class="inline-flex justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 sm:w-auto">
+                                <i class="bi bi-save mr-2"></i> Simpan Perubahan
+                            </button>
+                            <button type="button" @click="editModalOpen = false" class="inline-flex justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 hover:bg-slate-50 sm:w-auto">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

@@ -72,10 +72,11 @@
                                         @endif
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-5 text-sm text-slate-500">
-                                        @if($user->last_login_at)
+                                        @if($user->last_seen_at)
                                             <div class="flex items-center">
                                                 @php
-                                                    $isOnline = $user->last_login_at->gt(now()->subMinutes(5));
+                                                    // User is "online" if last seen within 5 minutes
+                                                    $isOnline = $user->last_seen_at->gt(now()->subMinutes(5));
                                                 @endphp
                                                 <span class="relative flex h-2.5 w-2.5 mr-3">
                                                     @if($isOnline)
@@ -86,12 +87,27 @@
                                                     @endif
                                                 </span>
                                                 <div class="flex flex-col">
-                                                    <span class="text-xs font-bold text-slate-700">{{ $user->last_login_at->diffForHumans() }}</span>
-                                                    <span class="text-[10px] text-slate-400 font-medium mt-0.5">{{ $user->last_login_at->format('d M, H:i') }}</span>
+                                                    @if($isOnline)
+                                                        <span class="text-xs font-bold text-emerald-600">● Online</span>
+                                                        <span class="text-[10px] text-slate-400 font-medium mt-0.5">Aktif {{ $user->last_seen_at->diffForHumans() }}</span>
+                                                    @else
+                                                        <span class="text-xs font-bold text-slate-700">Terakhir aktif</span>
+                                                        <span class="text-[10px] text-slate-400 font-medium mt-0.5">{{ $user->last_seen_at->diffForHumans() }} • {{ $user->last_seen_at->format('d M, H:i') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @elseif($user->last_login_at)
+                                            <div class="flex items-center">
+                                                <span class="relative flex h-2.5 w-2.5 mr-3">
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-300 ring-2 ring-white"></span>
+                                                </span>
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs font-bold text-slate-700">Login terakhir</span>
+                                                    <span class="text-[10px] text-slate-400 font-medium mt-0.5">{{ $user->last_login_at->diffForHumans() }}</span>
                                                 </div>
                                             </div>
                                         @else
-                                            <span class="text-slate-400 text-xs italic pl-1">Belum login</span>
+                                            <span class="text-slate-400 text-xs italic pl-1">Belum pernah aktif</span>
                                         @endif
                                     </td>
                                     <td class="relative whitespace-nowrap py-5 pl-3 pr-6 text-center text-sm font-medium">
