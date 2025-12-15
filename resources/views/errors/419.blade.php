@@ -1,3 +1,13 @@
+{{--
+    ⚠️ IMPORTANT: Halaman ini SEHARUSNYA TIDAK PERNAH DITAMPILKAN
+    
+    Error 419 (CSRF Token Mismatch) sudah di-handle di Exception Handler (bootstrap/app.php)
+    dan akan auto-redirect ke login/dashboard dengan flash message.
+    
+    Halaman ini hanya fallback untuk kasus edge case yang sangat jarang.
+    Jika halaman ini muncul, berarti ada masalah dengan exception handler.
+--}}
+
 @extends('errors::layout')
 
 @section('title', 'Sesi Kedaluwarsa')
@@ -16,10 +26,22 @@
             <i class="bi bi-shield-check text-amber-500 mt-0.5 mr-3"></i>
             <div class="text-sm text-amber-800 text-left">
                 <p class="font-medium mb-1">Kenapa ini terjadi?</p>
-                <p class="text-xs">Sistem melindungi data Anda dengan membatasi waktu sesi. Ini terjadi jika form dibuka terlalu lama sebelum di-submit, atau Anda tidak aktif dalam waktu yang cukup lama.</p>
+                <p class="text-xs">Sistem melindungi data Anda dengan membatasi waktu sesi. Ini terjadi jika form dibuka terlalu lama sebelum di-submit.</p>
             </div>
         </div>
     </div>
+
+    {{-- Auto-redirect as emergency fallback --}}
+    <script>
+        // This should rarely execute, as exception handler should catch 419
+        setTimeout(() => {
+            @auth
+                window.location.href = '{{ route('dashboard') }}';
+            @else
+                window.location.href = '{{ route('login') }}';
+            @endauth
+        }, 2000);
+    </script>
 @endsection
 
 @php
