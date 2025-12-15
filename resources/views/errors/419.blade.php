@@ -7,7 +7,7 @@
 
 @section('message-title', 'Sesi Anda Telah Kedaluwarsa')
 @section('message-body')
-    Untuk keamanan, sesi Anda telah habis masa aktifnya. Halaman akan dialihkan secara otomatis, atau klik tombol di bawah untuk melanjutkan.
+    Untuk keamanan, sesi Anda telah habis masa aktifnya. Silakan kembali ke dashboard atau login kembali untuk melanjutkan.
 @endsection
 
 @section('additional-content')
@@ -20,27 +20,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Auto-redirect script --}}
-    <script>
-        // Auto redirect after 3 seconds
-        let countdown = 3;
-        const redirectUrl = @json(auth()->check() ? route('dashboard') : route('login'));
-        const countdownElement = document.getElementById('countdown');
-        
-        const timer = setInterval(() => {
-            countdown--;
-            if (countdownElement) {
-                countdownElement.textContent = countdown;
-            }
-            
-            if (countdown <= 0) {
-                clearInterval(timer);
-                // Clear browser history to prevent back button loop
-                window.location.replace(redirectUrl);
-            }
-        }, 1000);
-    </script>
 @endsection
 
 @php
@@ -48,46 +27,17 @@
 @endphp
 
 @section('action-buttons')
-    <div class="text-center mb-4">
-        <p class="text-sm text-slate-600 mb-2">
-            <i class="bi bi-hourglass-split animate-pulse text-amber-500"></i>
-            Mengalihkan dalam <span id="countdown" class="font-bold text-amber-600">3</span> detik...
-        </p>
-    </div>
-
     @auth
         {{-- User sudah login, redirect ke dashboard --}}
-        <a href="{{ route('dashboard') }}" onclick="event.preventDefault(); window.location.replace(this.href);" class="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200 transition-all duration-200 hover:bg-amber-700 hover:shadow-amber-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200 transition-all duration-200 hover:bg-amber-700 hover:shadow-amber-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
             <i class="bi bi-house-door-fill mr-2"></i>
-            Lanjut ke Dashboard
+            Kembali ke Dashboard
         </a>
     @else
         {{-- User belum login, redirect ke login --}}
-        <a href="{{ route('login') }}" onclick="event.preventDefault(); window.location.replace(this.href);" class="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200 transition-all duration-200 hover:bg-amber-700 hover:shadow-amber-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+        <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200 transition-all duration-200 hover:bg-amber-700 hover:shadow-amber-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
             <i class="bi bi-box-arrow-in-right mr-2"></i>
-            Login Kembali
+            Login untuk Melanjutkan
         </a>
     @endauth
-
-    {{-- Optional: Clear cache & retry --}}
-    <button onclick="clearCacheAndRetry()" class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all duration-200 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
-        <i class="bi bi-arrow-clockwise mr-2"></i>
-        Coba Lagi dari Awal
-    </button>
-
-    <script>
-        function clearCacheAndRetry() {
-            // Clear the POST request from history
-            if (window.history && window.history.replaceState) {
-                window.history.replaceState(null, null, window.location.href);
-            }
-            
-            // Redirect to fresh page
-            @auth
-                window.location.replace('{{ route('dashboard') }}');
-            @else
-                window.location.replace('{{ route('login') }}');
-            @endauth
-        }
-    </script>
 @endsection
