@@ -14,10 +14,6 @@ class AuthService
      * Maximum login attempts before lockout
      */
     private const MAX_ATTEMPTS = 5;
-
-    /**
-     * Lockout duration in seconds (5 minutes)
-     */
     private const DECAY_SECONDS = 300;
 
     /**

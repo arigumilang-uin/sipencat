@@ -38,22 +38,65 @@
 
         <form action="{{ route('admin.shifts.store') }}" method="POST">
             @csrf
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-12 items-end">
-                <div class="md:col-span-4">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Shift <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" class="block w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 px-4 text-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('name') border-rose-300 bg-rose-50 text-rose-900 @enderror" placeholder="Contoh: Shift Pagi" value="{{ old('name') }}" required>
-                    @error('name')
-                        <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                    @enderror
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Nama & Deskripsi -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Shift <span class="text-rose-500">*</span></label>
+                        <input type="text" name="name" class="block w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 px-4 text-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200 @error('name') border-rose-300 bg-rose-50 text-rose-900 @enderror" placeholder="Contoh: Shift Pagi" value="{{ old('name') }}" required>
+                        @error('name')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Deskripsi</label>
+                        <input type="text" name="description" class="block w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 px-4 text-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200" placeholder="Contoh: Operasional pagi 08:00 - 17:00" value="{{ old('description') }}">
+                    </div>
                 </div>
 
-                <div class="md:col-span-5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Deskripsi</label>
-                    <input type="text" name="description" class="block w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 px-4 text-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-200" placeholder="Contoh: Operasional pagi 08:00 - 17:00" value="{{ old('description') }}">
-                </div>
+                <!-- Pilih Anggota -->
+                @if($availableUsers->count() > 0)
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                            <i class="bi bi-people-fill mr-1"></i>
+                            Pilih Anggota Shift (Opsional)
+                        </label>
+                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 max-h-64 overflow-y-auto">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                @foreach($availableUsers as $user)
+                                    <label class="flex items-center gap-2 p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all cursor-pointer border border-transparent hover:border-indigo-100">
+                                        <input type="checkbox" name="members[]" value="{{ $user->id }}" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                                            <div class="h-6 w-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                {{ substr($user->name, 0, 1) }}
+                                            </div>
+                                            <span class="text-sm font-medium text-slate-700 truncate">{{ $user->name }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <p class="mt-2 text-xs text-slate-500">
+                            <i class="bi bi-info-circle mr-1"></i>
+                            Anda dapat menambahkan lebih banyak anggota setelah shift dibuat.
+                        </p>
+                    </div>
+                @else
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                        <p class="text-sm text-amber-700">
+                            <i class="bi bi-exclamation-triangle mr-1"></i>
+                            Tidak ada Staff Operasional yang tersedia. Semua user sudah terdaftar di shift lain.
+                        </p>
+                    </div>
+                @endif
 
-                <div class="md:col-span-3">
-                    <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all duration-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <!-- Hidden status active -->
+                <input type="hidden" name="is_active" value="1">
+
+                <!-- Submit Button -->
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all duration-200 hover:bg-indigo-700 hover:shadow-indigo-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <i class="bi bi-save mr-2"></i>
                         Simpan Shift
                     </button>

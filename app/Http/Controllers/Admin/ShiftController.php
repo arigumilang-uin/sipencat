@@ -40,13 +40,36 @@ class ShiftController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
+            'members' => ['nullable', 'array'],
+            'members.*' => ['exists:users,id'],
         ], [
             'name.required' => 'Nama shift wajib diisi.',
         ]);
 
-        Shift::create($validated);
+        $shift = Shift::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'is_active' => $validated['is_active'],
+        ]);
 
-        return back()->with('success', 'Shift berhasil ditambahkan.');
+        // Add members if selected
+        if (isset($validated['members']) && is_array($validated['members'])) {
+            foreach ($validated['members'] as $userId) {
+                $user = User::find($userId);
+                
+                // Validate Staff Operasional and not already in shift
+                if ($user && $user->role === UserRole::STAFF_OPERASIONAL && !$user->shift()->exists()) {
+                    $shift->addMember($user->id);
+                }
+            }
+        }
+
+        $memberCount = isset($validated['members']) ? count($validated['members']) : 0;
+        $message = $memberCount > 0 
+            ? "Shift berhasil ditambahkan dengan {$memberCount} anggota."
+            : "Shift berhasil ditambahkan.";
+
+        return back()->with('success', $message);
     }
 
     /**
